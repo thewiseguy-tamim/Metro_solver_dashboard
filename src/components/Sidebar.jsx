@@ -33,7 +33,11 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
   const widthClass = collapsed ? 'w-20 px-3' : 'w-60 px-4';
 
   const IconWrap = ({ Icon, active }) => (
-    <Icon className={`w-5 h-5 shrink-0 ${active ? 'text-white' : 'text-[#6B7280]'}`} strokeWidth={2} aria-hidden="true" />
+    <Icon
+      className={`w-5 h-5 shrink-0 ${active ? 'text-white' : 'text-[#6B7280]'}`}
+      strokeWidth={2}
+      aria-hidden="true"
+    />
   );
 
   return (
@@ -49,21 +53,24 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
         <div className="flex items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10">
-                <img src={logoAnim} alt="Logo Animation" className="w-full h-full object-contain" />
+              <img src={logoAnim} alt="Logo Animation" className="w-full h-full object-contain" />
             </div>
             {!collapsed && (
-                <div className="leading-none">
-                <div className="text-[16px] font-bold tracking-wide">METRO SOLVER</div>
+              <div className="leading-none">
+                <div className="text-[16px] font-bold tracking-wide mb-2">METRO SOLVER</div>
                 <div className="text-[9px] opacity-70 -mt-0.5">SMART HR SOLUTION</div>
-                </div>
+              </div>
             )}
-            </div>
+          </div>
           <button
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             onClick={() => setCollapsed(!collapsed)}
-            className="ml-auto rounded-full p-1.5 hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            className="ml-auto rounded-full p-0.5 text-black"
           >
-            {collapsed ? <ChevronRight size={18} className="text-[#6B7280]" /> : <ChevronLeft size={18} className="text-[#6B7280]" />}
+            {collapsed
+              ? <ChevronRight size={18} className="text-black" />
+              : <ChevronLeft size={18} className="text-black" />
+            }
           </button>
         </div>
       </div>
@@ -84,9 +91,9 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
                   className={[
                     'group flex items-center gap-3 h-11 px-4 py-2.5',
                     'transition-colors duration-200',
-                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC] rounded-[8px]',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9F63FF] rounded-[8px]',
                     isActive
-                      ? 'bg-[#7C6FDC] text-white shadow-inner'
+                      ? 'bg-gradient-to-r from-[#6331F1] to-[#9F63FF] text-white shadow-sm'
                       : 'text-[#6B7280] hover:bg-[#F3F4F6] hover:rounded-[6px]',
                   ].join(' ')}
                 >
@@ -114,7 +121,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
         <div className="absolute bottom-4 left-0 right-0 px-3">
           <Link
             to="/logout"
-            className="group flex items-center gap-3 h-11 px-4 py-2.5 rounded-[6px] text-[#6B7280] hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            className="group flex items-center gap-3 h-11 px-4 py-2.5 rounded-[6px] text-[#6B7280] hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#9F63FF]"
           >
             <LogOut className="w-5 h-5 text-[#6B7280]" />
             {!collapsed && <span className="text-[14px] font-medium leading-5">Log Out</span>}
@@ -131,7 +138,13 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
       </nav>
 
       {/* Mobile overlay */}
-      {isMobile && !collapsed && <div aria-hidden className="fixed inset-0 bg-black/30 z-30 lg:hidden" onClick={() => setCollapsed(true)} />}
+      {isMobile && !collapsed && (
+        <div
+          aria-hidden
+          className="fixed inset-0 bg-black/30 z-30 lg:hidden"
+          onClick={() => setCollapsed(true)}
+        />
+      )}
     </aside>
   );
 }

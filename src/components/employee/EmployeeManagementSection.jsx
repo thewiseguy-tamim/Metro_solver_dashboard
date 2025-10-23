@@ -1,6 +1,18 @@
+// src/components/employee/EmployeeManagementSection.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, UserPlus, UserCheck, CalendarDays, FileSpreadsheet, MessageSquare, GraduationCap, TrendingUp, ChevronDown, Check } from 'lucide-react';
+import {
+  Users,
+  UserPlus,
+  UserCheck,
+  CalendarDays,
+  FileSpreadsheet,
+  MessageSquare,
+  GraduationCap,
+  TrendingUp,
+  ChevronDown,
+  Check
+} from 'lucide-react';
 import EmployeeStatCard from './EmployeeStatCard';
 
 export default function EmployeeManagementSection({ showHeader = true }) {
@@ -9,7 +21,9 @@ export default function EmployeeManagementSection({ showHeader = true }) {
   const ref = useRef(null);
 
   useEffect(() => {
-    const onClick = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const onClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
     const onEsc = (e) => e.key === 'Escape' && setOpen(false);
     document.addEventListener('mousedown', onClick);
     document.addEventListener('keydown', onEsc);
@@ -30,7 +44,6 @@ export default function EmployeeManagementSection({ showHeader = true }) {
     { title: 'Intern to Employee', value: '640', change: '+2.5%', changeColor: '#6C5DD3', lineColor: '#6C5DD3', icon: UserCheck, subtitle: 'Increased from last month', data: [5, 7, 6, 10, 9, 12, 14] }
   ];
 
-  // Range change currently keeps same values (no per-range JSON provided).
   const ranges = ['Weekly', 'Monthly', 'Yearly'];
 
   return (
@@ -63,12 +76,15 @@ export default function EmployeeManagementSection({ showHeader = true }) {
               )}
             </div>
 
+            {/* Centered View Details pill */}
             <Link
-              to="/employee-management"
-              className="h-10 px-4 rounded-[8px] text-white text-[14px] font-medium bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3]"
-            >
-              View Details
+                to="#"
+                className="h-9 px-4 inline-flex items-center justify-center rounded-full text-white text-[14px] font-medium"
+                style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
+                >
+                View Details
             </Link>
+
           </div>
         </div>
       )}

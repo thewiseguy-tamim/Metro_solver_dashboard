@@ -1,14 +1,16 @@
+// src/components/dashboard/RecruitmentEngagement.jsx
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import LineChart from '../charts/LineChart';
-import { Link } from 'react-router-dom';
 
 export default function RecruitmentEngagement({ data }) {
-  // Map datasets from JSON; if not provided, derive from base series
+  // Build dataset map from JSON; if not provided, derive from base series.
   const datasets = useMemo(() => {
     if (data?.datasets?.length) {
       const map = {};
-      data.datasets.forEach(d => { map[d.key] = { label: d.label, values: d.values }; });
+      data.datasets.forEach((d) => {
+        map[d.key] = { label: d.label, values: d.values };
+      });
       return map;
     }
     const base = data?.values || [];
@@ -17,12 +19,12 @@ export default function RecruitmentEngagement({ data }) {
     return {
       'job-openings': { label: 'Job Openings', values: base },
       'new-hires': { label: 'New Hires', values: derive(0.85) },
-      'applications': { label: 'Applications Received', values: derive(1.05) },
-      'interview': { label: 'Interview Stage', values: derive(0.8, 4) },
-      'attendance': { label: 'Attendance Rate', values: derive(0.9, 15) },
-      'absenteeism': { label: 'Absenteeism Rate', values: derive(0.6, 10) },
-      'cashflow': { label: 'Cash Flow Status', values: derive(0.95) },
-      'balance': { label: 'Current Balance', values: derive(0.75, 12) }
+      applications: { label: 'Applications Received', values: derive(1.05) },
+      interview: { label: 'Interview Stage', values: derive(0.8, 4) },
+      attendance: { label: 'Attendance Rate', values: derive(0.9, 15) },
+      absenteeism: { label: 'Absenteeism Rate', values: derive(0.6, 10) },
+      cashflow: { label: 'Cash Flow Status', values: derive(0.95) },
+      balance: { label: 'Current Balance', values: derive(0.75, 12) },
     };
   }, [data]);
 
@@ -31,7 +33,10 @@ export default function RecruitmentEngagement({ data }) {
     [datasets]
   );
 
-  const defaultKey = data?.defaultKey && datasets[data.defaultKey] ? data.defaultKey : datasetOptions[0]?.key;
+  const defaultKey =
+    data?.defaultKey && datasets[data.defaultKey]
+      ? data.defaultKey
+      : datasetOptions[0]?.key;
 
   // Range options (Weekly, Monthly, Yearly)
   const rangeOptions = data?.availableRanges || ['Weekly', 'Monthly', 'Yearly'];
@@ -42,7 +47,11 @@ export default function RecruitmentEngagement({ data }) {
   const [selectedKey, setSelectedKey] = useState(defaultKey);
   const [selectedRange, setSelectedRange] = useState(defaultRange);
 
-  const selectedDataset = datasets[selectedKey] || { label: datasetOptions[0]?.label ?? '', values: data?.values ?? [] };
+  const selectedDataset =
+    datasets[selectedKey] || {
+      label: datasetOptions[0]?.label ?? '',
+      values: data?.values ?? [],
+    };
 
   const datasetRef = useRef(null);
   const rangeRef = useRef(null);
@@ -50,14 +59,17 @@ export default function RecruitmentEngagement({ data }) {
   useEffect(() => {
     const onClick = (e) => {
       if (
-        datasetRef.current && !datasetRef.current.contains(e.target) &&
-        rangeRef.current && !rangeRef.current.contains(e.target)
+        datasetRef.current &&
+        !datasetRef.current.contains(e.target) &&
+        rangeRef.current &&
+        !rangeRef.current.contains(e.target)
       ) {
         setDatasetOpen(false);
         setRangeOpen(false);
       }
     };
-    const onEsc = (e) => (e.key === 'Escape') && (setDatasetOpen(false), setRangeOpen(false));
+    const onEsc = (e) =>
+      e.key === 'Escape' && (setDatasetOpen(false), setRangeOpen(false));
     document.addEventListener('mousedown', onClick);
     document.addEventListener('keydown', onEsc);
     return () => {
@@ -81,7 +93,10 @@ export default function RecruitmentEngagement({ data }) {
           out.push(Math.round(v0 + (v1 - v0) * t));
         }
       }
-      return { labels: Array.from({ length: out.length }, (_, i) => `W${i + 1}`), values: out };
+      return {
+        labels: Array.from({ length: out.length }, (_, i) => `W${i + 1}`),
+        values: out,
+      };
     };
 
     const toMonthly = (arr) => ({ labels: months, values: arr });
@@ -91,7 +106,7 @@ export default function RecruitmentEngagement({ data }) {
         Math.round((arr[0] + arr[1] + arr[2]) / 3),
         Math.round((arr[3] + arr[4] + arr[5]) / 3),
         Math.round((arr[6] + arr[7] + arr[8]) / 3),
-        Math.round((arr[9] + arr[10] + arr[11]) / 3)
+        Math.round((arr[9] + arr[10] + arr[11]) / 3),
       ];
       return { labels: ['Q1', 'Q2', 'Q3', 'Q4'], values: q };
     };
@@ -104,34 +119,53 @@ export default function RecruitmentEngagement({ data }) {
   if (!data) return null;
 
   return (
-    // Removed outer border as requested
+    // No outer border to match the design
     <section className="p-4 md:p-6">
-      {/* Header: title at left, CTA button aligned right */}
-      <div className="mb-2 pb-3 flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold">Recruitment & Employee Engagement</h2>
-        {data?.ctaText && (
-          <Link to="#" className="h-9 px-4 rounded-full text-white text-[14px] font-medium bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3]" >
-            {data.ctaText}
-          </Link>
-        )}
+      {/* Title + CTA aligned like the screenshot */}
+      <div className="mb-2 pb-2 flex items-center justify-between">
+        <h2 className="text-[18px] font-semibold">
+          Recruitment & Employee Engagement
+        </h2>
+        <button
+            className="h-9 px-4 rounded-full text-white text-[14px] font-medium"
+            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
+            >
+            View Details
+        </button>
+
       </div>
 
-      {/* Chart card with its own border */}
+      {/* Chart card with its own border and internal controls */}
       <div className="relative rounded-2xl border border-[#E5E7EB] p-2 md:p-4">
         {/* Dataset dropdown (left) */}
         <div className="absolute top-3 left-3 z-20" ref={datasetRef}>
-          <button
+        <button
             aria-haspopup="listbox"
             aria-expanded={datasetOpen}
             onClick={() => setDatasetOpen((o) => !o)}
-            className="h-9 px-3 rounded-full text-white text-[14px] flex items-center gap-2 bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
-          >
+            className="h-9 px-3 rounded-full text-white text-[14px] flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            style={{
+            background:
+                selectedDataset.label === 'Job Openings'
+                ? 'linear-gradient(0deg, #41295A 0%, #2F0743 100%)'
+                : 'linear-gradient(to bottom, #7C6FDC, #6C5DD3)',
+            }}
+        >
             {selectedDataset.label}
-            <ChevronDown className={`w-4 h-4 text-white transition-transform ${datasetOpen ? 'rotate-180' : ''}`} />
-          </button>
+            <ChevronDown
+            className={`w-4 h-4 text-white transition-transform ${
+                datasetOpen ? 'rotate-180' : ''
+            }`}
+            />
+        </button>
+
 
           {datasetOpen && (
-            <div role="listbox" tabIndex={-1} className="mt-2 w-64 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2">
+            <div
+              role="listbox"
+              tabIndex={-1}
+              className="mt-2 w-64 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
+            >
               {Object.entries(datasets).map(([key, val]) => {
                 const active = key === selectedKey;
                 return (
@@ -143,7 +177,9 @@ export default function RecruitmentEngagement({ data }) {
                       setSelectedKey(key);
                       setDatasetOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${active ? 'font-semibold' : 'font-medium'}`}
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${
+                      active ? 'font-semibold' : 'font-medium'
+                    }`}
                   >
                     <span>{val.label}</span>
                     {active && <Check className="w-4 h-4 text-[#6C5DD3]" />}
@@ -163,29 +199,41 @@ export default function RecruitmentEngagement({ data }) {
             className="h-9 px-3 rounded-full text-[14px] border border-[#E5E7EB] text-[#0A0D14] flex items-center gap-2 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
           >
             {selectedRange}
-            <ChevronDown className={`w-4 h-4 text-[#6B7280] transition-transform ${rangeOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown
+              className={`w-4 h-4 text-[#6B7280] transition-transform ${
+                rangeOpen ? 'rotate-180' : ''
+              }`}
+            />
           </button>
 
           {rangeOpen && (
-            <div role="listbox" tabIndex={-1} className="absolute right-0 mt-2 w-48 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2">
-              {['Weekly', 'Monthly', 'Yearly'].map((label) => {
-                const active = label === selectedRange;
-                return (
-                  <button
-                    key={label}
-                    role="option"
-                    aria-selected={active}
-                    onClick={() => {
-                      setSelectedRange(label);
-                      setRangeOpen(false);
-                    }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${active ? 'font-semibold' : 'font-medium'}`}
-                  >
-                    <span>{label}</span>
-                    {active && <Check className="w-4 h-4 text-[#6C5DD3]" />}
-                  </button>
-                );
-              })}
+            <div
+              role="listbox"
+              tabIndex={-1}
+              className="absolute right-0 mt-2 w-48 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
+            >
+              {(data?.availableRanges || ['Weekly', 'Monthly', 'Yearly']).map(
+                (label) => {
+                  const active = label === selectedRange;
+                  return (
+                    <button
+                      key={label}
+                      role="option"
+                      aria-selected={active}
+                      onClick={() => {
+                        setSelectedRange(label);
+                        setRangeOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${
+                        active ? 'font-semibold' : 'font-medium'
+                      }`}
+                    >
+                      <span>{label}</span>
+                      {active && <Check className="w-4 h-4 text-[#6C5DD3]" />}
+                    </button>
+                  );
+                }
+              )}
             </div>
           )}
         </div>
@@ -196,12 +244,14 @@ export default function RecruitmentEngagement({ data }) {
             labels={series.labels}
             values={series.values}
             annotateIndex={
-              selectedRange === 'Monthly' && selectedKey === (data?.defaultKey || 'job-openings')
+              selectedRange === 'Monthly' &&
+              selectedKey === (data?.defaultKey || 'job-openings')
                 ? data.annotation?.index
                 : null
             }
             annotateLabel={
-              selectedRange === 'Monthly' && selectedKey === (data?.defaultKey || 'job-openings')
+              selectedRange === 'Monthly' &&
+              selectedKey === (data?.defaultKey || 'job-openings')
                 ? data.annotation?.label
                 : ''
             }

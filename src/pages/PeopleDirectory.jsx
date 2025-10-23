@@ -32,13 +32,13 @@ import CreateEmployeeModal from '../components/PeopleDirectory/CreateEmployeeMod
 
 // Enrich base data for demo
 const EXTRA = {
-  tahsan: { position: 'Founder - CEO', department: 'Executive', location: 'Boston HQ', reportsTo: null, avatar: 'https://i.pravatar.cc/80?u=tahsan' },
+  tahsan: { position: 'Founder - CEO', department: 'Executive', location: 'Boston HQ', reportsTo: null, avatar: 'https://i.pravatar.cc/80?u=matt' },
   herry: { position: 'Engineering', department: 'Engineering', location: 'London Office', reportsTo: 'tahsan', avatar: 'https://i.pravatar.cc/80?u=herry' },
   herryb: { position: 'Commercial', department: 'Sales', location: 'London Office', reportsTo: 'tahsan', avatar: 'https://i.pravatar.cc/80?u=herryb' },
   james: { position: 'Finance', department: 'Finance', location: 'Boston HQ', reportsTo: 'tahsan', avatar: 'https://i.pravatar.cc/80?u=james' },
   azam: { position: 'Marketing', department: 'Marketing', location: 'Boston HQ', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=azam' },
   tim: { position: 'HR Management', department: 'HR', location: 'Boston HQ', reportsTo: 'herryb', avatar: 'https://i.pravatar.cc/80?u=tim' },
-  matt: { position: 'Account Executive', department: 'Sales', location: 'Boston HQ', reportsTo: 'james', avatar: 'https://i.pravatar.cc/80?u=matt' },
+  matt: { position: 'Account Executive', department: 'Sales', location: 'Boston HQ', reportsTo: 'james', avatar: 'https://i.pravatar.cc/80?u=tahsan' },
   alex: { position: 'Engineer', department: 'Engineering', location: 'London Office', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=alex' },
   mia:  { position: 'Engineer', department: 'Engineering', location: 'London Office', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=mia' },
   noah: { position: 'Analyst', department: 'Finance', location: 'Boston HQ', reportsTo: 'james', avatar: 'https://i.pravatar.cc/80?u=noah' },
@@ -342,12 +342,14 @@ export default function PeopleDirectory() {
           </button>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="h-10 px-4 rounded-full bg-[#7C6FDC] text-white hover:brightness-95 transition flex items-center gap-2"
+            className="h-10 px-4 rounded-full text-white hover:brightness-95 transition flex items-center gap-2"
+            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
             aria-label="Creating New Account"
-          >
+            >
             <UserPlus className="w-4 h-4" />
             <span>Creating New Account</span>
-          </button>
+        </button>
+
         </div>
       </div>
 

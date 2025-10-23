@@ -39,7 +39,7 @@ export default function Navbar({ sidebarWidth, collapsed, setCollapsed }) {
 
           <div className="flex items-center gap-3">
             <img
-              src="https://i.pravatar.cc/80?img=5"
+              src="https://i.pravatar.cc/80?u=azam"
               alt="User avatar"
               width={40}
               height={40}

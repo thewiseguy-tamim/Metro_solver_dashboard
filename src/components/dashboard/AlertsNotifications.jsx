@@ -1,3 +1,4 @@
+// src/components/dashboard/AlertsNotifications.jsx
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, AlertTriangle, CheckCircle2, AlertCircle, Check } from 'lucide-react';
 
@@ -47,9 +48,10 @@ export default function AlertsNotifications({ items }) {
           <div className="relative" ref={ref}>
             <button
               onClick={() => setOpen((o) => !o)}
-              className="h-9 px-3 rounded-full border border-[#E5E7EB] text-[14px] flex items-center gap-2"
+              className="h-9 px-3 rounded-full border border-[#E5E7EB] text-[14px] flex items-center gap-2 text-white"
+              style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
             >
-              {selectedRange} <ChevronDown className="w-4 h-4 text-[#6B7280]" />
+              {selectedRange} <ChevronDown className="w-4 h-4 text-white" />
             </button>
             {open && (
               <div className="absolute right-0 mt-2 w-44 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2">
@@ -66,7 +68,10 @@ export default function AlertsNotifications({ items }) {
               </div>
             )}
           </div>
-          <button className="h-9 px-4 rounded-full text-white text-[14px] font-medium bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3]">
+          <button
+            className="h-9 px-4 rounded-full text-white text-[14px] font-medium"
+            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
+          >
             View Details
           </button>
         </div>
@@ -85,9 +90,10 @@ export default function AlertsNotifications({ items }) {
               aria-haspopup="listbox"
               aria-expanded={open}
               onClick={() => setOpen((o) => !o)}
-              className="h-9 px-3 rounded-full border border-[#E5E7EB] text-[14px] flex items-center gap-2"
+              className="h-9 px-3 rounded-full border border-[#E5E7EB] text-[14px] flex items-center gap-2 text-white"
+              style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
             >
-              {selectedRange} <ChevronDown className="w-4 h-4 text-[#6B7280]" />
+              {selectedRange} <ChevronDown className="w-4 h-4 text-white" />
             </button>
             {open && (
               <div role="listbox" tabIndex={-1} className="absolute right-0 mt-2 w-44 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2">
@@ -110,7 +116,10 @@ export default function AlertsNotifications({ items }) {
             )}
           </div>
 
-          <button className="h-9 px-4 rounded-full text-white text-[14px] font-medium bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3]">
+          <button
+            className="h-9 px-4 rounded-full text-white text-[14px] font-medium"
+            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
+          >
             View Details
           </button>
         </div>

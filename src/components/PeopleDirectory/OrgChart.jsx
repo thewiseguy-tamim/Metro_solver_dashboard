@@ -3,16 +3,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import EmployeeCard from './EmployeeCard';
 
 function ParentToChildrenConnector({ hasChildren }) {
-  if (!hasChildren) return null;
-  return (
-    <div
-      className="absolute left-1/2 -translate-x-1/2 z-0 pointer-events-none"
-      style={{ top: '100%', height: 24 }}
-      aria-hidden
-    >
-      <div className="mx-auto w-px h-full bg-[#E5E7EB]" />
-    </div>
-  );
+  // We now draw the parent vertical and curves via SVG in OrgChildrenRow
+  // so we don’t need to render any HTML line here.
+  return null;
 }
 
 function OrgChildrenRow({ nodes, renderNode }) {
@@ -20,58 +13,152 @@ function OrgChildrenRow({ nodes, renderNode }) {
 
   const containerRef = useRef(null);
   const itemRefs = useRef([]);
-  const [hLine, setHLine] = useState({ left: 0, width: 0 });
+  const [layout, setLayout] = useState(null);
 
   const measure = () => {
     const container = containerRef.current;
-    if (!container || itemRefs.current.length === 0) return;
+    if (!container) return;
 
     const rect = container.getBoundingClientRect();
-    const first = itemRefs.current[0];
-    const last = itemRefs.current[itemRefs.current.length - 1];
-    if (!first || !last) return;
+    const parentWrap = container.previousElementSibling; // the wrapper containing the parent card
+    if (!parentWrap) return;
 
-    const fr = first.getBoundingClientRect();
-    const lr = last.getBoundingClientRect();
+    const pr = parentWrap.getBoundingClientRect();
+    const parentX = pr.left - rect.left + pr.width / 2;
+    const parentBottom = pr.bottom - rect.top;
 
-    const firstCenter = fr.left - rect.left + fr.width / 2;
-    const lastCenter = lr.left - rect.left + lr.width / 2;
+    const children = itemRefs.current
+      .filter(Boolean)
+      .map((el) => {
+        const cr = el.getBoundingClientRect();
+        return {
+          x: cr.left - rect.left + cr.width / 2,
+          top: cr.top - rect.top,
+        };
+      });
 
-    const left = Math.min(firstCenter, lastCenter);
-    const width = Math.abs(lastCenter - firstCenter);
+    if (children.length === 0) return;
 
-    setHLine({ left, width });
+    const leftMostX = Math.min(...children.map((c) => c.x));
+    const rightMostX = Math.max(...children.map((c) => c.x));
+    const minChildTop = Math.min(...children.map((c) => c.top));
+
+    // Pick a horizontal distribution line Y between parent bottom and children top
+    const gapPC = Math.max(0, minChildTop - parentBottom);
+    const baseGap = Math.max(16, Math.min(40, Math.round(gapPC * 0.45)));
+    let yLine = parentBottom + baseGap;
+    if (yLine > minChildTop - 6) yLine = Math.max(parentBottom + 6, minChildTop - 6);
+
+    setLayout({
+      parentX,
+      parentBottom,
+      yLine,
+      leftMostX,
+      rightMostX,
+      children,
+      width: rect.width,
+      height: rect.height,
+    });
   };
 
   useLayoutEffect(() => {
     measure();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes.length]);
 
   useEffect(() => {
     const onResize = () => measure();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const r = 10; // curve radius
+  const stroke = '#E5E7EB';
+  const thickness = 2;
+
+  // Build SVG paths
+  const paths = () => {
+    if (!layout) return [];
+
+    const { parentX, parentBottom, yLine, leftMostX, rightMostX, children } = layout;
+
+    const fmt = (n) => Number(n.toFixed(1));
+    const move = (x, y) => `M ${fmt(x)} ${fmt(y)}`;
+    const line = (x, y) => `L ${fmt(x)} ${fmt(y)}`;
+    const quad = (cx, cy, x, y) => `Q ${fmt(cx)} ${fmt(cy)} ${fmt(x)} ${fmt(y)}`;
+
+    const out = [];
+
+    // 1) Parent vertical down to just above the distribution line
+    if (yLine - r > parentBottom) {
+      out.push(`${move(parentX, parentBottom)} ${line(parentX, yLine - r)}`);
+    }
+
+    // 2) Horizontal distribution line with smooth turn from the parent
+    if (children.length === 1) {
+      const cx = children[0].x;
+      const dir = cx >= parentX ? 1 : -1;
+      const startX = parentX + dir * r;
+      const endX = cx - dir * r;
+
+      out.push(`${move(parentX, yLine - r)} ${quad(parentX, yLine, startX, yLine)} ${line(endX, yLine)}`);
+    } else if (children.length > 1) {
+      // Left arm
+      out.push(`${move(parentX, yLine - r)} ${quad(parentX, yLine, parentX - r, yLine)} ${line(leftMostX, yLine)}`);
+      // Right arm
+      out.push(`${move(parentX, yLine - r)} ${quad(parentX, yLine, parentX + r, yLine)} ${line(rightMostX, yLine)}`);
+    }
+
+    // 3) For each child: rounded elbow from horizontal down to child's top
+    for (const c of children) {
+      const available = c.top - yLine - 4;
+      const rChild = Math.max(4, Math.min(r, Math.floor(available / 2)));
+      if (rChild > 4) {
+        out.push(`${move(c.x - rChild, yLine)} ${quad(c.x, yLine, c.x, yLine + rChild)} ${line(c.x, c.top)}`);
+      } else {
+        // Not enough room for a curve; draw straight down
+        out.push(`${move(c.x, yLine)} ${line(c.x, c.top)}`);
+      }
+    }
+
+    return out;
+  };
+
+  const dList = paths();
 
   return (
     <div ref={containerRef} className="mt-12 relative">
-      {/* Horizontal bar only when 2+ children */}
-      {nodes.length > 1 && (
-        <div
-          className="absolute top-[12px] z-0 pointer-events-none border-t border-[#E5E7EB]"
-          style={{ left: hLine.left, width: hLine.width }}
+      {/* SVG overlay for smooth connectors (behind cards) */}
+      {layout && (
+        <svg
+          className="absolute inset-0 z-0 pointer-events-none"
+          width={layout.width}
+          height={layout.height}
+          viewBox={`0 0 ${layout.width} ${layout.height}`}
+          style={{ overflow: 'visible' }} // allow content slightly outside if needed
           aria-hidden
-        />
+        >
+          {dList.map((d, i) => (
+            <path
+              key={i}
+              d={d}
+              fill="none"
+              stroke={stroke}
+              strokeWidth={thickness}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              shapeRendering="geometricPrecision"
+            />
+          ))}
+        </svg>
       )}
 
+      {/* Children row (cards) */}
       <div className="flex justify-center items-start gap-10 relative z-10">
         {nodes.map((n, idx) => (
           <div key={n.id} ref={(el) => (itemRefs.current[idx] = el)} className="relative">
-            {/* vertical from child up to horizontal bar */}
-            <div
-              className="absolute left-1/2 -translate-x-1/2 -top-12 w-px h-12 bg-[#E5E7EB] z-0 pointer-events-none"
-              aria-hidden
-            />
+            {/* vertical-from-child html line removed; it’s now drawn by the SVG overlay */}
             {renderNode(n)}
           </div>
         ))}

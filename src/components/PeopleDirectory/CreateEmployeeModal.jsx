@@ -310,24 +310,24 @@ export default function CreateEmployeeModal({ isOpen, onClose, onSave }) {
         />
 
         {/* Actions */}
-        <div className="flex items-center justify-between mt-2">
-          <button
+        <div className="grid grid-cols-2 items-center gap-4 mt-2">
+        <button
             type="button"
-            className="h-11 px-6 rounded-full border border-[#E5E7EB] hover:bg-[#F3F4F6]"
+            className="w-full h-11 px-6 rounded-full border border-[#E5E7EB] hover:bg-[#F3F4F6]"
             onClick={onClose}
-          >
+        >
             Cancel
-          </button>
-          <button
+        </button>
+        <button
             type="submit"
             disabled={submitting || !canSubmit}
             className={[
-              'h-11 px-8 rounded-full text-white bg-[#7C6FDC] hover:brightness-95',
-              submitting || !canSubmit ? 'opacity-70 cursor-not-allowed' : '',
+            'w-full h-11 px-8 rounded-full text-white hover:brightness-95 bg-[#7C6FDC] bg-[linear-gradient(0deg,_#41295A_0%,_#2F0743_100%)]',
+            submitting || !canSubmit ? 'opacity-70 cursor-not-allowed' : '',
             ].join(' ')}
-          >
+        >
             Save
-          </button>
+        </button>
         </div>
       </form>
     </div>

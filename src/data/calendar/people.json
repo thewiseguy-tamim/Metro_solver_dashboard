@@ -1,13 +1,13 @@
 [
-  { "id": "tahsan", "name": "Tahsan Khan", "color": "#F59E0B", "handle": "@tahsan" },
-  { "id": "herryb", "name": "Herry Brooks", "color": "#EF4444", "handle": "@herryb" },
-  { "id": "herry", "name": "Herry Kane", "color": "#F59E0B", "handle": "@herry" },
-  { "id": "azam", "name": "Azam Khan", "color": "#60A5FA", "handle": "@azam" },
-  { "id": "tim", "name": "Tim David", "color": "#60A5FA", "handle": "@tim" },
-  { "id": "matt", "name": "Matt Henry", "color": "#10B981", "handle": "@matt" },
-  { "id": "james", "name": "James Henry", "color": "#A855F7", "handle": "@james" },
-  { "id": "alex", "name": "Alex Parker", "color": "#6B7280", "handle": "@alex" },
-  { "id": "mia", "name": "Mia Cooper", "color": "#6B7280", "handle": "@mia" },
-  { "id": "noah", "name": "Noah Smith", "color": "#6B7280", "handle": "@noah" },
-  { "id": "olivia", "name": "Olivia Rhye", "color": "#6B7280", "handle": "@olivia" }
+  { "id": "tahsan", "name": "Tahsan Khan", "color": "#F59E0B", "handle": "@tahsan", "avatar": "https://i.pravatar.cc/80?u=matt" },
+  { "id": "herryb", "name": "Herry Brooks", "color": "#EF4444", "handle": "@herryb", "avatar": "https://i.pravatar.cc/80?u=herryb" },
+  { "id": "herry", "name": "Herry Kane", "color": "#F59E0B", "handle": "@herry", "avatar": "https://i.pravatar.cc/80?u=herry" },
+  { "id": "azam", "name": "Azam Khan", "color": "#60A5FA", "handle": "@azam", "avatar": "https://i.pravatar.cc/80?u=azam" },
+  { "id": "tim", "name": "Tim David", "color": "#60A5FA", "handle": "@tim", "avatar": "https://i.pravatar.cc/80?u=tim" },
+  { "id": "matt", "name": "Matt Henry", "color": "#10B981", "handle": "@matt", "avatar": "https://i.pravatar.cc/80?u=matt" },
+  { "id": "james", "name": "James Henry", "color": "#A855F7", "handle": "@james", "avatar": "https://i.pravatar.cc/80?u=james" },
+  { "id": "alex", "name": "Alex Parker", "color": "#6B7280", "handle": "@alex", "avatar": "https://i.pravatar.cc/80?u=alex.parker" },
+  { "id": "mia", "name": "Mia Cooper", "color": "#6B7280", "handle": "@mia", "avatar": "https://i.pravatar.cc/80?u=mia.cooper" },
+  { "id": "noah", "name": "Noah Smith", "color": "#6B7280", "handle": "@noah", "avatar": "https://i.pravatar.cc/80?u=noah.smith" },
+  { "id": "olivia", "name": "Olivia Rhye", "color": "#6B7280", "handle": "@olivia", "avatar": "https://i.pravatar.cc/80?u=olivia.rhye" }
 ]

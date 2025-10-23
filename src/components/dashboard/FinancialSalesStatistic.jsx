@@ -1,3 +1,4 @@
+// src/components/dashboard/FinancialSalesStatistic.jsx
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 
@@ -48,7 +49,7 @@ export default function FinancialSalesStatistic({ data }) {
   const deltaClasses = isPositive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700';
 
   return (
-    <section className="space-y-4 md:space-y-6">
+    <section className="space-y-4 mt-5 md:space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-[18px] font-semibold">Financial & Sales Statistic</h2>
 
@@ -58,10 +59,11 @@ export default function FinancialSalesStatistic({ data }) {
             aria-haspopup="listbox"
             aria-expanded={rangeOpen}
             onClick={() => setRangeOpen((o) => !o)}
-            className="h-9 px-3 rounded-full text-[14px] border border-[#E5E7EB] text-[#0A0D14] flex items-center gap-2 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            className="h-9 px-3 rounded-full text-[14px] border border-[#E5E7EB] flex items-center gap-2 text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
           >
             {selectedRange}
-            <ChevronDown className={`w-4 h-4 text-[#6B7280] transition-transform ${rangeOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 text-white transition-transform ${rangeOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {rangeOpen && (
@@ -112,8 +114,11 @@ export default function FinancialSalesStatistic({ data }) {
         <div className="mt-2">
           <div className="relative h-2.5 w-full rounded-full bg-[#E5E7EB]">
             <div
-              className="absolute left-0 top-0 h-2.5 rounded-full bg-[#6C5DD3]"
-              style={{ width: `${progress}%` }}
+              className="absolute left-0 top-0 h-2.5 rounded-full"
+              style={{
+                width: `${progress}%`,
+                background: 'linear-gradient(105.32deg, #361A67 11.27%, #1B1B31 20.43%, #251F40 57.77%, #412178 87.6%)'
+              }}
             />
             <span
               className="absolute -top-5 px-2 py-0.5 text-[12px] font-semibold text-white rounded-full bg-[#6C5DD3] transform -translate-x-1/2"

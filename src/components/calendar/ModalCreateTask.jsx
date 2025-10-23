@@ -1,24 +1,36 @@
 // src/components/calendar/ModalCreateTask.jsx
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import {
+  XMarkIcon,
+  UserIcon,
+  TagIcon,
+  CalendarDaysIcon,
+  ClockIcon,
+  CloudArrowUpIcon,
+  CheckCircleIcon,
+  FlagIcon,
+} from '@heroicons/react/24/outline';
 import DatePicker from './DatePicker';
 import labelsJson from '../../data/calendar/labels.json';
 import groupsJson from '../../data/calendar/groups.json';
 import prioritiesJson from '../../data/calendar/priorities.json';
 
-export default function ModalCreateTask({ onClose, people, onCreate }) {
+export default function ModalCreateTask({ onClose, people = [], onCreate }) {
+  // State
   const [title, setTitle] = useState('Meeting Client for Dashboard UI');
   const [description, setDescription] = useState('Meeting with a client for a Dashboard UI project...');
-  const [assigneeId, setAssigneeId] = useState(people[0]?.id);
+  const [assigneeId, setAssigneeId] = useState(String(people[0]?.id ?? ''));
   const [date, setDate] = useState(new Date());
   const [timeStart, setTimeStart] = useState('10:00');
   const [timeEnd, setTimeEnd] = useState('10:30');
-  const [members, setMembers] = useState([people[0]]);
-  const [labelId, setLabelId] = useState(labelsJson[0]?.id);
-  const [groupId, setGroupId] = useState(groupsJson[0]?.id);
-  const [priorityId, setPriorityId] = useState(prioritiesJson[0]?.id);
+  const [labelId, setLabelId] = useState(String(labelsJson[0]?.id ?? ''));
+  const [groupId, setGroupId] = useState(String(groupsJson[0]?.id ?? ''));
+  const [priorityId, setPriorityId] = useState(String(prioritiesJson[0]?.id ?? ''));
   const [theme, setTheme] = useState('indigo');
   const [errors, setErrors] = useState({});
+  const [attachment, setAttachment] = useState(null);
 
+  // Helpers
   const isTime = (t) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(t);
   const toMin = (t) => {
     const [h, m] = t.split(':').map(Number);
@@ -37,169 +49,301 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
     return Object.keys(e).length === 0;
   };
 
+  const assignee = useMemo(
+    () => people.find((p) => String(p.id) === String(assigneeId)),
+    [people, assigneeId]
+  );
+
+  // Group status dots (only for "In Progress" and "Done")
+  const groupDotClass = (name = '') => {
+    if (name === 'In Progress') return 'bg-amber-500';
+    if (name === 'Done') return 'bg-emerald-500';
+    return '';
+  };
+
+  // Priority palette mapping by name (icon color + right-side dot when unselected)
+  const priorityMap = {
+    Urgent: { color: '#EF4444', dot: '#EF4444' }, // red
+    High: { color: '#F59E0B', dot: '#F59E0B' }, // amber
+    Normal: { color: '#3B82F6', dot: '#64748B' }, // blue flag, slate-ish dot
+    Low: { color: '#6B7280', dot: '#10B981' }, // gray flag, green dot
+  };
+
+  const handleFile = (file) => {
+    if (!file) return;
+    setAttachment(file);
+  };
+
+  const onDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const file = e.dataTransfer?.files?.[0];
+    handleFile(file);
+  };
+
+  const onDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-xl border border-gray-200 mx-4">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="create-task-title"
+    >
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+
+      {/* Wider modal to support two columns */}
+      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-gray-200 mx-4">
+        {/* Header with dashed border bottom */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-dashed border-gray-200">
-          <h3 className="text-lg font-semibold">Create New Task</h3>
+          <h3 id="create-task-title" className="text-[20px] font-semibold text-gray-900">
+            Create New Task
+          </h3>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center"
+            className="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500"
+            aria-label="Close"
           >
-            ✕
+            <XMarkIcon className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Content: Two-column grid on desktop, single column on mobile; 24px gap */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left column */}
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-500">Task Title</label>
+          {/* Left column: independent vertical stack with 20px spacing */}
+          <div className="space-y-5">
+            {/* Task Title */}
+            <Field label="Task Title" error={errors.title}>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="e.g. Meeting with Acme Inc."
+                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
               />
-              {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Write Description</label>
+            </Field>
+
+            {/* Write Description */}
+            <Field label="Write Description">
               <textarea
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                placeholder="Add a short description..."
+                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
               />
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Add Member</label>
-              <select
-                value={assigneeId}
-                onChange={(e) => setAssigneeId(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 bg-white"
-              >
-                {people.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Due Date</label>
-              <div className="mt-1">
-                <DateInput value={date} onChange={setDate} />
+            </Field>
+
+            {/* Add Member with user icon prefix */}
+            <Field label="Add Member">
+              <div className="relative">
+                <UserIcon className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <select
+                  value={assigneeId}
+                  onChange={(e) => setAssigneeId(e.target.value)}
+                  className="mt-2 w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                >
+                  {people.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-              {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Add Group</label>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                {groupsJson.map((g) => (
-                  <button
-                    key={g.id}
-                    onClick={() => setGroupId(g.id)}
-                    className={`px-3 py-2 rounded-lg border ${
-                      groupId === g.id ? 'border-purple-400 bg-purple-50' : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    {g.name}
-                  </button>
-                ))}
+            </Field>
+
+            {/* Due Date with calendar icon */}
+            <Field label="Due Date" error={errors.date}>
+              <DateInput value={date} onChange={setDate} />
+            </Field>
+
+            {/* Add Group: 2x2 grid, radio-style with right status dot (only for In Progress/Done) */}
+            <Field label="Add Group">
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {groupsJson.map((g) => {
+                  const selected = String(groupId) === String(g.id);
+                  const dotClass = groupDotClass(g.name);
+                  return (
+                    <button
+                      key={g.id}
+                      type="button"
+                      onClick={() => setGroupId(String(g.id))}
+                      aria-pressed={selected}
+                      className={[
+                        'px-3 py-[10px] rounded-lg border text-left flex items-center justify-between gap-2',
+                        selected ? 'border-2 border-violet-500 bg-violet-50' : 'border-gray-200 hover:bg-gray-50',
+                        'focus:outline-none focus:ring-2 focus:ring-violet-300',
+                      ].join(' ')}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span
+                          className={[
+                            'inline-flex h-4 w-4 items-center justify-center rounded-full border',
+                            selected ? 'border-violet-500' : 'border-gray-300',
+                          ].join(' ')}
+                        >
+                          {selected && <span className="h-2 w-2 rounded-full bg-violet-500" />}
+                        </span>
+                        <span className="text-gray-900 text-[14px]">{g.name}</span>
+                      </span>
+                      {/* Status dot only for In Progress / Done */}
+                      {dotClass ? <span className={`h-2 w-2 rounded-full ${dotClass}`} /> : <span className="h-2 w-2" />}
+                    </button>
+                  );
+                })}
               </div>
-            </div>
+            </Field>
           </div>
-          {/* Right column */}
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm text-gray-500">Add Labels</label>
-              <select
-                value={labelId}
-                onChange={(e) => setLabelId(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 bg-white"
-              >
-                {labelsJson.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Add Time</label>
-              <div className="mt-1 grid grid-cols-2 gap-2">
-                <input
+
+          {/* Right column: independent vertical stack with 20px spacing */}
+          <div className="space-y-5">
+            {/* Add Labels with tag icon prefix */}
+            <Field label="Add Labels">
+              <div className="relative">
+                <TagIcon className="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <select
+                  value={labelId}
+                  onChange={(e) => setLabelId(e.target.value)}
+                  className="mt-2 w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                >
+                  {labelsJson.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </Field>
+
+            {/* Add Time with clock icons in both inputs */}
+            <Field label="Add Time" error={errors.timeStart || errors.timeEnd}>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <InputWithIcon
+                  icon={<ClockIcon className="w-4 h-4 text-gray-500" />}
                   value={timeStart}
-                  onChange={(e) => setTimeStart(e.target.value)}
-                  className="rounded-lg border border-gray-200 px-3 py-2"
-                  placeholder="Start (HH:MM)"
+                  onChange={setTimeStart}
+                  placeholder="HH:MM"
                 />
-                <input
+                <InputWithIcon
+                  icon={<ClockIcon className="w-4 h-4 text-gray-500" />}
                   value={timeEnd}
-                  onChange={(e) => setTimeEnd(e.target.value)}
-                  className="rounded-lg border border-gray-200 px-3 py-2"
-                  placeholder="End (HH:MM)"
+                  onChange={setTimeEnd}
+                  placeholder="HH:MM"
                 />
               </div>
               {(errors.timeStart || errors.timeEnd) && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.timeStart || errors.timeEnd}
-                </p>
+                <p className="text-xs text-red-500 mt-1">{errors.timeStart || errors.timeEnd}</p>
               )}
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Set Priority</label>
+            </Field>
+
+            {/* Set Priority: 2x2 grid, flag left, text center, checkmark right on selected */}
+            <Field label="Set Priority">
               <div className="mt-2 grid grid-cols-2 gap-2">
-                {prioritiesJson.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => setPriorityId(p.id)}
-                    className={`px-3 py-2 rounded-lg border flex items-center justify-between ${
-                      priorityId === p.id ? 'border-purple-400 bg-purple-50' : 'border-gray-200 hover:bg-gray-50'
-                    }`}
-                  >
-                    <span>{p.name}</span>
-                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: p.color }} />
-                  </button>
-                ))}
+                {prioritiesJson.map((p) => {
+                  const selected = String(priorityId) === String(p.id);
+                  const byName = priorityMap[p.name] || { color: p.color || '#6B7280', dot: p.color || '#6B7280' };
+                  return (
+                    <button
+                      type="button"
+                      key={p.id}
+                      onClick={() => setPriorityId(String(p.id))}
+                      aria-pressed={selected}
+                      className={[
+                        'px-3 py-3 rounded-lg border flex items-center justify-between gap-2',
+                        selected ? 'border-2 border-violet-500 bg-violet-50' : 'border-gray-200 hover:bg-gray-50',
+                        'focus:outline-none focus:ring-2 focus:ring-violet-300',
+                      ].join(' ')}
+                    >
+                      <span className="flex items-center gap-2">
+                        <FlagIcon className="w-5 h-5" style={{ color: byName.color }} />
+                        <span className="text-gray-900 text-[14px]">{p.name}</span>
+                      </span>
+                      {selected ? (
+                        <CheckCircleIcon className="w-5 h-5 text-violet-500" />
+                      ) : (
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: byName.dot }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Attachment</label>
-              <div className="mt-1 rounded-xl border border-gray-200 text-center py-10 text-sm text-gray-500">
-                Click to upload or drag and drop
-                <div className="text-xs text-gray-400 mt-2">SVG, PNG, JPG or GIF (max, 800x400px)</div>
-              </div>
-            </div>
-            <div>
-              <label className="text-sm text-gray-500">Card Color</label>
-              <div className="mt-2 flex flex-wrap gap-2">
+            </Field>
+
+            {/* Attachment area: dashed, rounded, light bg, centered content */}
+            <Field label="Attachment">
+              <label
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                className="mt-2 block rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-center py-12 px-6 cursor-pointer hover:border-violet-300 hover:bg-violet-50"
+              >
+                <input
+                  type="file"
+                  accept="image/svg+xml,image/png,image/jpeg,image/gif"
+                  className="hidden"
+                  onChange={(e) => handleFile(e.target.files?.[0])}
+                />
+                <div className="flex flex-col items-center gap-2">
+                  <CloudArrowUpIcon className="w-8 h-8 text-violet-500" />
+                  {attachment ? (
+                    <span className="text-gray-900 font-medium">{attachment.name}</span>
+                  ) : (
+                    <>
+                      <div className="text-sm">
+                        <span className="text-violet-600 font-medium">Click to upload</span>{' '}
+                        <span className="text-gray-600">or drag and drop</span>
+                      </div>
+                      <span className="text-xs text-gray-400">SVG, PNG, JPG or GIF (max, 800x400px)</span>
+                    </>
+                  )}
+                </div>
+              </label>
+            </Field>
+
+            {/* Card Color: pill bars, 60-70px width, ring when selected */}
+            <Field label="Card Color">
+              <div className="mt-2 flex flex-wrap gap-3">
                 {[
-                  { key: 'purple', classes: 'bg-purple-500' },
-                  { key: 'magenta', classes: 'bg-fuchsia-500' },
-                  { key: 'orange', classes: 'bg-amber-500' },
-                  { key: 'indigo', classes: 'bg-indigo-500' },
-                  { key: 'green', classes: 'bg-emerald-500' },
-                  { key: 'teal', classes: 'bg-teal-500' },
+                  { key: 'purple', className: 'bg-violet-500' },
+                  { key: 'magenta', className: 'bg-fuchsia-500' },
+                  { key: 'orange', className: 'bg-orange-500' },
+                  { key: 'indigo', className: 'bg-indigo-500' },
+                  { key: 'teal', className: 'bg-teal-500' },
+                  { key: 'green', className: 'bg-emerald-500' },
+                  { key: 'red', className: 'bg-rose-500' },
                 ].map((c) => (
                   <button
                     key={c.key}
+                    type="button"
                     onClick={() => setTheme(c.key)}
-                    className={`h-3 rounded-full w-16 ${c.classes} ${theme === c.key ? 'ring-2 ring-purple-300' : ''}`}
+                    className={[
+                      'h-[14px] w-[68px] rounded-full',
+                      c.className,
+                      theme === c.key ? 'ring-2 ring-purple-400 ring-offset-2' : '',
+                    ].join(' ')}
+                    aria-label={`Select ${c.key} card color`}
+                    aria-pressed={theme === c.key}
                   />
                 ))}
               </div>
-            </div>
+            </Field>
           </div>
         </div>
-        <div className="px-6 pb-6">
-          <div className="flex items-center justify-between gap-3">
+
+        {/* Footer: space-between, cancel left, save right, 24px horizontal, 20px bottom */}
+        <div className="px-6 pb-5 border-t border-gray-100">
+          <div className="flex items-center justify-between">
             <button
-              className="px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
+              className="px-6 py-3 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
               onClick={onClose}
             >
               Cancel
             </button>
+
             <button
               onClick={() => {
                 if (!validate()) return;
@@ -207,15 +351,19 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
                   title,
                   description,
                   assigneeId,
-                  members,
+                  members: assignee ? [assignee] : [],
                   date,
                   timeStart,
                   timeEnd,
+                  labelId,
+                  groupId,
+                  priorityId,
                   platform: '',
                   theme,
+                  attachment,
                 });
               }}
-              className="px-4 py-2 rounded-lg text-white bg-[#6C5DD3] hover:bg-[#5a4bc7]"
+              className="px-9 py-3 rounded-lg text-white bg-[linear-gradient(180deg,#2F0743_0%,#41295A_100%)] hover:brightness-95 hover:shadow focus:outline-none focus:ring-2 focus:ring-violet-300"
             >
               Save
             </button>
@@ -226,15 +374,44 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
   );
 }
 
+/* Helper components */
+
+function Field({ label, error, children }) {
+  return (
+    <div>
+      <label className="text-[13px] text-gray-500 font-medium">{label}</label>
+      {children}
+      {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
+    </div>
+  );
+}
+
+function InputWithIcon({ icon, value, onChange, placeholder }) {
+  return (
+    <div className="relative">
+      <span className="absolute left-3 top-1/2 -translate-y-1/2">{icon}</span>
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+      />
+    </div>
+  );
+}
+
 function DateInput({ value, onChange }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full rounded-lg border border-gray-200 px-3 py-2 text-left hover:bg-gray-50"
+        className="w-full rounded-lg border border-gray-200 px-3 py-[10px] text-left hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 flex items-center gap-2"
       >
-        {value ? value.toLocaleDateString() : 'Select date'}
+        <CalendarDaysIcon className="w-4 h-4 text-gray-500" />
+        <span className={value ? 'text-gray-900 text-[14px]' : 'text-gray-400 text-[14px]'}>
+          {value ? value.toLocaleDateString() : 'Select date'}
+        </span>
       </button>
       {open && (
         <div className="absolute z-20 mt-2">
