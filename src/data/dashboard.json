@@ -1,16 +1,36 @@
 
 {
   "recruitmentEngagement": {
-    "datasetLabel": "Job Openings",
     "range": "Monthly",
+    "ctaText": "View Details",
     "annotation": { "index": 5, "label": "Job Open 320" },
-    "months": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    "values": [20,30,25,50,70,70,60,78,72,86,80,92]
+    "months": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "defaultKey": "job-openings",
+    "datasets": [
+      { "key": "job-openings", "label": "Job Openings", "values": [20, 30, 25, 50, 70, 70, 60, 78, 72, 86, 80, 92] },
+      { "key": "new-hires", "label": "New Hires", "values": [12, 18, 16, 28, 42, 40, 38, 54, 50, 58, 56, 64] },
+      { "key": "applications", "label": "Applications Received", "values": [30, 38, 35, 55, 75, 73, 70, 82, 80, 90, 88, 96] },
+      { "key": "interview", "label": "Interview Stage", "values": [10, 12, 14, 22, 35, 40, 38, 48, 46, 52, 50, 58] },
+      { "key": "attendance", "label": "Attendance Rate", "values": [85, 86, 84, 88, 90, 89, 91, 92, 90, 93, 92, 94] },
+      { "key": "absenteeism", "label": "Absenteeism Rate", "values": [15, 14, 16, 12, 10, 11, 9, 8, 10, 7, 8, 6] },
+      { "key": "cashflow", "label": "Cash Flow Status", "values": [40, 44, 42, 48, 56, 60, 58, 62, 64, 70, 68, 74] },
+      { "key": "balance", "label": "Current Balance", "values": [60, 62, 61, 64, 66, 68, 67, 70, 72, 74, 76, 78] }
+    ]
   },
   "financial": {
+    "currency": "GBP",
+    "kpis": [
+      { "label": "Total Earning", "value": 8593.65 },
+      { "label": "Total Expenses", "value": 3570.5 }
+    ],
     "totalEarning": 8593.65,
     "totalExpenses": 3570.5,
-    "totalSales": { "value": 456780, "progress": 50, "deltaText": "+15.3% this quarter" }
+    "totalSales": {
+      "value": 456780,
+      "progress": 50,
+      "subtitle": "Improved from last month",
+      "deltaText": "+15.3% this quarter"
+    }
   },
   "alerts": [
     {

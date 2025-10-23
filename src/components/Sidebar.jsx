@@ -7,7 +7,7 @@ import {
   FileText, HelpCircle, Settings, LogOut, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import Lottie from 'lottie-react';
-import logoAnim from '../Materiel/Lottie Files/Logo.json';
+import logoAnim from '../Materiel/Frame.gif';
 
 const MENU = [
   { label: 'Dashboard', to: '/', icon: LayoutDashboard },
@@ -49,15 +49,15 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
         <div className="flex items-center">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10">
-              <Lottie animationData={logoAnim} loop autoplay />
+                <img src={logoAnim} alt="Logo Animation" className="w-full h-full object-contain" />
             </div>
             {!collapsed && (
-              <div className="leading-none">
+                <div className="leading-none">
                 <div className="text-[16px] font-bold tracking-wide">METRO SOLVER</div>
                 <div className="text-[9px] opacity-70 -mt-0.5">SMART HR SOLUTION</div>
-              </div>
+                </div>
             )}
-          </div>
+            </div>
           <button
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             onClick={() => setCollapsed(!collapsed)}

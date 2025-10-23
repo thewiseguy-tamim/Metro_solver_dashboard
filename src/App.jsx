@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import EmployeeManagementPage from './pages/EmployeeManagement';
+import Calendar from './pages/Calendar';
 
 // Generic placeholder for remaining routes
 const Page = ({ title }) => (
@@ -20,10 +21,12 @@ export default function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
+          {/* Main pages */}
           <Route path="/" element={<Dashboard />} />
           <Route path="/employee-management" element={<EmployeeManagementPage />} />
+          <Route path="/calendar" element={<Calendar />} />
 
-          {/* Other routes from spec */}
+          {/* Other routes from your spec */}
           <Route path="/time-tracking" element={<Page title="Time Tracking" />} />
           <Route path="/meeting" element={<Page title="Meeting" />} />
           <Route path="/employees" element={<Page title="Employees" />} />
@@ -31,7 +34,6 @@ export default function App() {
           <Route path="/recruitment" element={<Page title="Recruitment" />} />
           <Route path="/messages" element={<Page title="Messages" />} />
           <Route path="/task" element={<Page title="Task" />} />
-          <Route path="/calendar" element={<Page title="Calendar" />} />
           <Route path="/project-collaboration" element={<Page title="Project Collaboration" />} />
           <Route path="/hmrc" element={<Page title="HMRC" />} />
           <Route path="/newsfeed" element={<Page title="NewsFeed" />} />

@@ -1,0 +1,6 @@
+[
+  { "id": "l1", "name": "Meeting", "color": "#6C5DD3" },
+  { "id": "l2", "name": "Design", "color": "#EC4899" },
+  { "id": "l3", "name": "Recruitment", "color": "#10B981" },
+  { "id": "l4", "name": "Finance", "color": "#3B82F6" }
+]
