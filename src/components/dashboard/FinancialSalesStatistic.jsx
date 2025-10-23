@@ -91,8 +91,8 @@ export default function FinancialSalesStatistic({ data }) {
         </div>
       </div>
 
-      {/* KPI Cards  */}
-      <div className="grid grid-cols-2 gap-3 md:gap-4">
+      {/* KPI Cards (stack only on md; revert to 2 cols on xl to keep desktop as-is) */}
+      <div className="grid grid-cols-2 md:grid-cols-1 xl:grid-cols-2 gap-3 md:gap-4">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="rounded-2xl border border-[#E5E7EB] p-5 md:p-6 min-h-[132px] md:min-h-[150px] flex flex-col justify-center">
             <div className="text-[14px] text-[#6B7280] mb-1">{kpi.label}</div>
@@ -101,7 +101,7 @@ export default function FinancialSalesStatistic({ data }) {
         ))}
       </div>
 
-      {/* Total Sales Card  */}
+      {/* Total Sales Card */}
       <div className="rounded-2xl border border-[#E5E7EB] p-6 min-h-[260px] md:min-h-[220px] flex flex-col">
         <div className="mb-3">
           <div className="text-[18px] font-semibold">Total Sales</div>
