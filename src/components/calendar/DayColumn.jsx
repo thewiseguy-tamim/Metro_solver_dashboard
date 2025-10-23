@@ -1,7 +1,15 @@
 // src/components/calendar/DayColumn.jsx
 import React, { useMemo } from 'react';
 import EventCard from './EventCard';
-import { dateKey, hourHeight, dayStartHour, dayEndHour, timeToMinutes } from './utils';
+import {
+  dateKey,
+  hourHeight,
+  dayStartHour,
+  dayEndHour,
+  timeToMinutes,
+  minutesToTop,
+  durationToHeight,
+} from './utils';
 
 export default function DayColumn({ date, events, peopleMap, shaded = false }) {
   const key = dateKey(date);
@@ -17,39 +25,23 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
       );
   }, [events, key]);
 
-  // Assign lanes to overlapping events
-  const laidOut = useMemo(() => {
-    const items = dayEvents.map((e) => ({
-      e,
-      start: timeToMinutes(e.start),
-      end: timeToMinutes(e.end),
-      lane: 0,
-      group: 0,
-    }));
+  // Stack events vertically to avoid any overlap (full-width, no side-by-side lanes)
+  const stacked = useMemo(() => {
+    let lastBottom = -Infinity;
+    const gap = 8; // px gap between stacked cards
 
-    let active = [];
-    let group = -1;
-    const groupLaneMax = [];
+    return dayEvents.map((e) => {
+      const start = timeToMinutes(e.start);
+      const end = timeToMinutes(e.end);
+      const naturalTop = minutesToTop(start);
+      const naturalHeight = durationToHeight(start, end);
 
-    for (const item of items) {
-      active = active.filter((it) => it.end > item.start);
-      if (active.length === 0) group += 1;
+      const top = Math.max(naturalTop, lastBottom + gap);
+      const height = naturalHeight;
+      lastBottom = top + height;
 
-      const used = new Set(active.map((a) => a.lane));
-      let lane = 0;
-      while (used.has(lane)) lane += 1;
-
-      item.lane = lane;
-      item.group = group;
-      active.push(item);
-      groupLaneMax[group] = Math.max(groupLaneMax[group] || 0, lane + 1);
-    }
-
-    return items.map((it) => ({
-      event: it.e,
-      laneIndex: it.lane,
-      laneCount: groupLaneMax[it.group],
-    }));
+      return { event: e, top, height };
+    });
   }, [dayEvents]);
 
   const totalH = (dayEndHour - dayStartHour) * hourHeight;
@@ -77,13 +69,15 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
         />
       ))}
 
-      {laidOut.map(({ event, laneIndex, laneCount }) => (
+      {stacked.map(({ event, top, height }) => (
         <EventCard
           key={event.id}
           event={event}
           peopleMap={peopleMap}
-          laneIndex={laneIndex}
-          laneCount={laneCount}
+          laneIndex={0}
+          laneCount={1}
+          topOverride={top}
+          heightOverride={height}
         />
       ))}
     </div>

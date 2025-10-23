@@ -1,12 +1,11 @@
 // src/components/calendar/utils.js
 
-export const hourHeight = 64; // px per hour
-export const dayStartHour = 5; // keep 05 so 5:30 appears above 06 like the mock
-export const dayEndHour = 11; // through 10:30 comfortably
+export const hourHeight = 100; // taller calendar
+export const dayStartHour = 5;
+export const dayEndHour = 11;
 
-// Spec
-export const minEventHeight = 100; // minimum card height
-export const laneGap = 8; // px between overlapping lanes
+export const minEventHeight = 100; // min card height
+export const laneGap = 8; // gap between overlapping lanes
 
 export function startOfWeek(date, weekStartsOn = 1) {
   const d = new Date(date);
@@ -16,8 +15,6 @@ export function startOfWeek(date, weekStartsOn = 1) {
   return d;
 }
 
-// 7-day range starting at selected date (matches reference)
-// Fallback keeps Monday–Sunday if you pass no options
 export function getWeekDays(selectedDate, opts = {}) {
   if (opts.startFromSelected) {
     const base = new Date(
@@ -68,7 +65,7 @@ export function sameDay(a, b) {
   );
 }
 
-// "06 AM" style
+// "06 AM"
 export function formatHourLabel(h) {
   const label = h === 0 ? 12 : h > 12 ? h - 12 : h;
   const ampm = h >= 12 ? 'PM' : 'AM';
@@ -77,10 +74,10 @@ export function formatHourLabel(h) {
 
 export function isWeekend(d) {
   const day = d.getDay();
-  return day === 0 || day === 6; // Sun or Sat
+  return day === 0 || day === 6;
 }
 
-// Tailwind gradient classes for the colored bottom stripe (lighter start, 300 -> 500)
+// Tailwind classes for dot (kept for reuse elsewhere)
 export const themeClasses = {
   purple: { dot: 'bg-purple-500', stripe: 'bg-gradient-to-r from-purple-300 to-purple-500' },
   indigo: { dot: 'bg-indigo-500', stripe: 'bg-gradient-to-r from-indigo-300 to-indigo-500' },
@@ -91,4 +88,17 @@ export const themeClasses = {
   orange: { dot: 'bg-amber-500', stripe: 'bg-gradient-to-r from-amber-300 to-amber-500' },
   magenta: { dot: 'bg-fuchsia-500', stripe: 'bg-gradient-to-r from-fuchsia-300 to-fuchsia-500' },
   slate: { dot: 'bg-slate-500', stripe: 'bg-gradient-to-r from-slate-300 to-slate-500' },
+};
+
+// Exact hex for stripes (solid diagonal lines)
+export const themeHex = {
+  purple: '#6C5DD3',
+  indigo: '#6366F1',
+  lavender: '#8B5CF6',
+  teal: '#14B8A6',
+  green: '#10B981',
+  blue: '#3B82F6',
+  orange: '#F59E0B',
+  magenta: '#EC4899',
+  slate: '#64748B',
 };

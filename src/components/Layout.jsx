@@ -25,7 +25,8 @@ export default function Layout({ children }) {
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} isMobile={isMobile} />
       <Navbar sidebarWidth={sidebarWidth} collapsed={collapsed} setCollapsed={setCollapsed} />
       <main className="pt-[88px] px-6" style={{ marginLeft: sidebarWidth }}>
-        <div className="max-w-[1400px] mx-auto">{children}</div>
+        {/* Wider content container */}
+        <div className="w-full max-w-screen-2xl 2xl:max-w-[1800px] mx-auto">{children}</div>
       </main>
     </div>
   );
