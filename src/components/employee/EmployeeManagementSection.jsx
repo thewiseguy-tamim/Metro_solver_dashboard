@@ -94,14 +94,10 @@ export default function EmployeeManagementSection({ showHeader = true }) {
         <div className="mb-4 flex items-center justify-between">
           <h2 id="employee-management" className="text-[18px] font-semibold">Employee Management</h2>
           <div className="flex items-center gap-3">
-            <button className="h-10 px-3 text-[14px] rounded-[8px] border border-[#E5E7EB] flex items-center gap-2 focus-ring" aria-label="Change range">
+            <button className="h-10 px-3 text-[14px] rounded-[8px] border border-[#E5E7EB] flex items-center gap-2" aria-label="Change range">
               Monthly <ChevronDown className="w-4 h-4 text-[#6B7280]" />
             </button>
-            <Link
-              to="/employee-management"
-              className="h-10 px-4 rounded-[8px] text-white text-[14px] font-medium focus-ring"
-              style={{ background: 'linear-gradient(180deg, #7C6FDC 0%, #6C5DD3 100%)' }}
-            >
+            <Link to="/employee-management" className="h-10 px-4 rounded-[8px] text-white text-[14px] font-medium bg-gradient-to-b from-[#7C6FDC] to-[#6C5DD3]">
               View Details
             </Link>
           </div>

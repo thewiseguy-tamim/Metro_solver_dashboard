@@ -41,8 +41,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
       aria-label="Sidebar"
       className={[
         'fixed left-0 top-0 z-40 h-screen bg-white border-r border-[#E5E7EB]',
-        'shadow-lg transition-all duration-300 ease-in-out',
-        widthClass,
+        'shadow-lg transition-all duration-300 ease-in-out', widthClass,
       ].join(' ')}
     >
       {/* Logo + Toggle */}
@@ -62,7 +61,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
           <button
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             onClick={() => setCollapsed(!collapsed)}
-            className="ml-auto focus-ring rounded-full p-1.5 hover:bg-[#F3F4F6] transition-colors duration-200"
+            className="ml-auto rounded-full p-1.5 hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
           >
             {collapsed ? <ChevronRight size={18} className="text-[#6B7280]" /> : <ChevronLeft size={18} className="text-[#6B7280]" />}
           </button>
@@ -71,7 +70,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
 
       {/* Menu */}
       <nav role="menu" aria-label="Primary" className="mt-4 relative h-[calc(100%-60px)]">
-        <ul className="space-y-1 pb-24 overflow-y-auto hide-scrollbar">
+        <ul className="space-y-1 pb-24 overflow-y-auto">
           {MENU.map((item) => {
             const isActive = location.pathname === item.to || (item.to === '/' && location.pathname === '');
             const ItemIcon = item.icon;
@@ -84,15 +83,12 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
                   aria-current={isActive ? 'page' : undefined}
                   className={[
                     'group flex items-center gap-3 h-11 px-4 py-2.5',
-                    'transition-colors duration-200 focus-ring',
+                    'transition-colors duration-200',
+                    'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC] rounded-[8px]',
                     isActive
-                      ? 'bg-[#7C6FDC] text-white rounded-[8px] shadow-inner'
+                      ? 'bg-[#7C6FDC] text-white shadow-inner'
                       : 'text-[#6B7280] hover:bg-[#F3F4F6] hover:rounded-[6px]',
                   ].join(' ')}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') e.currentTarget.click();
-                  }}
                 >
                   <IconWrap Icon={ItemIcon} active={isActive} />
                   {!collapsed && (
@@ -103,7 +99,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
                   {collapsed && (
                     <span
                       role="tooltip"
-                      className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 rounded-md bg-[#0A0D14] text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
+                      className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 rounded-md bg-[#0A0D14] text-white text-xs px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50"
                     >
                       {item.label}
                     </span>
@@ -118,7 +114,7 @@ export default function Sidebar({ collapsed, setCollapsed, isMobile }) {
         <div className="absolute bottom-4 left-0 right-0 px-3">
           <Link
             to="/logout"
-            className="group flex items-center gap-3 h-11 px-4 py-2.5 rounded-[6px] text-[#6B7280] hover:bg-[#F3F4F6] transition-colors duration-200 focus-ring"
+            className="group flex items-center gap-3 h-11 px-4 py-2.5 rounded-[6px] text-[#6B7280] hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
           >
             <LogOut className="w-5 h-5 text-[#6B7280]" />
             {!collapsed && <span className="text-[14px] font-medium leading-5">Log Out</span>}

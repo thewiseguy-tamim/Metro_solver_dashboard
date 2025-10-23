@@ -14,7 +14,7 @@ export default function Navbar({ sidebarWidth, collapsed, setCollapsed }) {
         <div className="flex items-center gap-3">
           <button
             aria-label="Toggle sidebar"
-            className="lg:hidden p-2 rounded-md hover:bg-[#F3F4F6] transition-colors duration-200 focus-ring"
+            className="lg:hidden p-2 rounded-md hover:bg-[#F3F4F6] transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
             onClick={() => setCollapsed(!collapsed)}
           >
             <PanelLeftOpen className="w-5 h-5 text-[#6B7280]" />
@@ -25,7 +25,7 @@ export default function Navbar({ sidebarWidth, collapsed, setCollapsed }) {
             <input
               type="text"
               placeholder="Search something here..."
-              className="w-full h-11 pl-9 pr-3 text-[14px] rounded-[8px] border border-[#E5E7EB] placeholder-[#6B7280] focus-ring focus:border-[#7C6FDC]"
+              className="w-full h-11 pl-9 pr-3 text-[14px] rounded-[8px] border border-[#E5E7EB] placeholder-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
             />
           </div>
         </div>

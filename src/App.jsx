@@ -5,7 +5,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import EmployeeManagementPage from './pages/EmployeeManagement';
 
-// Generic placeholder page
+// Generic placeholder for remaining routes
 const Page = ({ title }) => (
   <div className="text-[#0A0D14]">
     <h1 className="text-2xl font-semibold mb-4">{title}</h1>

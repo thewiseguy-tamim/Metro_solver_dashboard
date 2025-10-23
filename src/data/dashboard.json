@@ -1,0 +1,41 @@
+
+{
+  "recruitmentEngagement": {
+    "datasetLabel": "Job Openings",
+    "range": "Monthly",
+    "annotation": { "index": 5, "label": "Job Open 320" },
+    "months": ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    "values": [20,30,25,50,70,70,60,78,72,86,80,92]
+  },
+  "financial": {
+    "totalEarning": 8593.65,
+    "totalExpenses": 3570.5,
+    "totalSales": { "value": 456780, "progress": 50, "deltaText": "+15.3% this quarter" }
+  },
+  "alerts": [
+    {
+      "title": "Budget Overrun Alert",
+      "severity": "Critical",
+      "message": "Marketing department exceeded monthly budget by 15%",
+      "timeAgo": "2 hours ago"
+    },
+    {
+      "title": "Performance Reviews Due",
+      "severity": "Warning",
+      "message": "5 employee performance reviews due this week",
+      "timeAgo": "10 hours ago"
+    },
+    {
+      "title": "Campaign Launch",
+      "severity": "Approved",
+      "message": "Q1 Marketing campaign launching tomorrow",
+      "timeAgo": "1 day ago"
+    },
+    {
+      "title": "High Absenteeism",
+      "severity": "Alert",
+      "message": "Attendance rate dropped to 85% this week",
+      "timeAgo": "2 day ago"
+    }
+  ]
+}

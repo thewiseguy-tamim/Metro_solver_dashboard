@@ -9,7 +9,7 @@ export default function EmployeeManagementPage() {
       <div className="rounded-2xl border border-[#E5E7EB] p-6">
         <h3 className="text-[16px] font-semibold mb-2">Breakdown</h3>
         <p className="text-[#6B7280] text-[14px]">
-          This page reuses the same components as the dashboard section, so styles and spacing stay perfectly consistent with the design.
+          This page reuses the same components as the dashboard section, keeping visuals consistent.
         </p>
       </div>
     </div>
