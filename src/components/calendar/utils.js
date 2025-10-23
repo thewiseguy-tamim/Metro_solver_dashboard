@@ -1,6 +1,6 @@
 export const hourHeight = 64; // px per hour
-export const dayStartHour = 5;
-export const dayEndHour = 11; // keep grid to 11 so 10:30 is visible
+export const dayStartHour = 5; // start 05 so 5:30 appears above 06 like the design
+export const dayEndHour = 11; // show through 10:30 comfortably
 
 export function startOfWeek(date, weekStartsOn = 1) {
   const d = new Date(date);
@@ -19,7 +19,7 @@ export function getWeekDays(selectedDate) {
   });
 }
 
-// LOCAL date key (no UTC). Matches JSON dates.
+// LOCAL date key (no UTC)
 export function dateKey(d) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');

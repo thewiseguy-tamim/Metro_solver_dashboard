@@ -5,7 +5,7 @@ import Toolbar from '../components/calendar/Toolbar';
 import CalendarGrid from '../components/calendar/CalendarGrid';
 import ModalSchedule from '../components/calendar/ModalSchedule';
 import ModalCreateTask from '../components/calendar/ModalCreateTask';
-import { dateKey, getWeekDays } from '../components/calendar/utils';
+import { dateKey } from '../components/calendar/utils';
 
 export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(() => new Date('2024-11-06T00:00:00'));
@@ -19,16 +19,12 @@ export default function Calendar() {
     return m;
   }, []);
 
-  // Counts for the selected day
   const todayEvents = events.filter((e) => e.date === dateKey(selectedDate));
   const meetingsCount = todayEvents.filter((e) => e.type === 'meeting').length;
   const eventCount = todayEvents.filter((e) => e.type === 'event').length;
 
-  const addEvent = (newEvent) => setEvents((prev) => [...prev, newEvent]);
-
   return (
     <div className="w-full">
-      {/* Title + actions */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
         <div>
           <h1 className="text-2xl font-semibold text-[#0A0D14]">
@@ -58,7 +54,6 @@ export default function Calendar() {
         </div>
       </div>
 
-      {/* Toolbar */}
       <div className="rounded-2xl border border-gray-200 bg-white overflow-hidden">
         <Toolbar
           selectedDate={selectedDate}
@@ -71,11 +66,9 @@ export default function Calendar() {
           }
         />
 
-        {/* Grid */}
         <CalendarGrid selectedDate={selectedDate} events={events} peopleMap={peopleMap} />
       </div>
 
-      {/* Modals */}
       {openSchedule && (
         <ModalSchedule
           onClose={() => setOpenSchedule(false)}
@@ -87,7 +80,7 @@ export default function Calendar() {
               type: 'meeting',
               title: payload.title || 'Meeting',
               subtitle: payload.subtitle || '',
-              date: dateKey(payload.date),
+              date: dateKey(payload.date), // local key (no UTC)
               start: payload.timeStart || '09:00',
               end: payload.timeEnd || '09:30',
               organizerId: payload.organizerId,
@@ -95,7 +88,7 @@ export default function Calendar() {
               platform: payload.platform || 'on Zoom',
               theme: payload.theme || 'purple',
             };
-            addEvent(event);
+            setEvents((prev) => [...prev, event]);
             setOpenSchedule(false);
           }}
         />
@@ -112,7 +105,7 @@ export default function Calendar() {
               type: 'event',
               title: payload.title || 'New Task',
               subtitle: payload.description || '',
-              date: dateKey(payload.date),
+              date: dateKey(payload.date), // local key (no UTC)
               start: payload.timeStart || '10:00',
               end: payload.timeEnd || '10:30',
               organizerId: payload.assigneeId,
@@ -120,7 +113,7 @@ export default function Calendar() {
               platform: payload.platform || '',
               theme: payload.theme || 'indigo',
             };
-            addEvent(event);
+            setEvents((prev) => [...prev, event]);
             setOpenCreate(false);
           }}
         />

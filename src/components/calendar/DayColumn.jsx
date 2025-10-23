@@ -9,10 +9,14 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
   const dayEvents = useMemo(() => {
     return events
       .filter((e) => e.date === key)
-      .sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start) || timeToMinutes(a.end) - timeToMinutes(b.end));
+      .sort(
+        (a, b) =>
+          timeToMinutes(a.start) - timeToMinutes(b.start) ||
+          timeToMinutes(a.end) - timeToMinutes(b.end)
+      );
   }, [events, key]);
 
-  // Layout: assign lanes to overlapping events so they render side-by-side
+  // Assign lanes to overlapping events
   const laidOut = useMemo(() => {
     const items = dayEvents.map((e) => ({
       e,
@@ -27,24 +31,19 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
     const groupLaneMax = [];
 
     for (const item of items) {
-      // remove non-overlapping from active
       active = active.filter((it) => it.end > item.start);
-
       if (active.length === 0) group += 1;
 
-      // find first free lane
       const used = new Set(active.map((a) => a.lane));
       let lane = 0;
       while (used.has(lane)) lane += 1;
 
       item.lane = lane;
       item.group = group;
-
       active.push(item);
       groupLaneMax[group] = Math.max(groupLaneMax[group] || 0, lane + 1);
     }
 
-    // attach laneCount to each
     return items.map((it) => ({
       event: it.e,
       laneIndex: it.lane,
@@ -57,9 +56,7 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
   return (
     <div className="relative border-l border-gray-100" style={{ height: totalH }}>
       {shaded && (
-        <div
-          className="absolute inset-0 pointer-events-none opacity-40 bg-[repeating-linear-gradient(135deg,rgba(107,114,128,0.12)_0_6px,transparent_6px_12px)]"
-        />
+        <div className="absolute inset-0 pointer-events-none opacity-40 bg-[repeating-linear-gradient(135deg,rgba(107,114,128,0.12)_0_6px,transparent_6px_12px)]" />
       )}
 
       {/* hour and half-hour lines */}

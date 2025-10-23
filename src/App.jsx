@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import EmployeeManagementPage from './pages/EmployeeManagement';
 import Calendar from './pages/Calendar';
+import PeopleDirectory from './pages/PeopleDirectory';
 
 // Generic placeholder for remaining routes
 const Page = ({ title }) => (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="/calendar" element={<Calendar />} />
 
           {/* Other routes from your spec */}
+          <Route path="/employees" element={<PeopleDirectory />} />
           <Route path="/time-tracking" element={<Page title="Time Tracking" />} />
           <Route path="/meeting" element={<Page title="Meeting" />} />
           <Route path="/employees" element={<Page title="Employees" />} />
