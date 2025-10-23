@@ -1,10 +1,9 @@
+// src/components/calendar/ModalCreateTask.jsx
 import React, { useState } from 'react';
 import DatePicker from './DatePicker';
 import labelsJson from '../../data/calendar/labels.json';
 import groupsJson from '../../data/calendar/groups.json';
 import prioritiesJson from '../../data/calendar/priorities.json';
-
-const initials = (name) => name.split(' ').map(p => p[0]).slice(0, 2).join('');
 
 export default function ModalCreateTask({ onClose, people, onCreate }) {
   const [title, setTitle] = useState('Meeting Client for Dashboard UI');
@@ -18,6 +17,25 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
   const [groupId, setGroupId] = useState(groupsJson[0]?.id);
   const [priorityId, setPriorityId] = useState(prioritiesJson[0]?.id);
   const [theme, setTheme] = useState('indigo');
+  const [errors, setErrors] = useState({});
+
+  const isTime = (t) => /^([01]?\d|2[0-3]):[0-5]\d$/.test(t);
+  const toMin = (t) => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const validate = () => {
+    const e = {};
+    if (!title.trim()) e.title = 'Title is required';
+    if (!date) e.date = 'Date is required';
+    if (!isTime(timeStart)) e.timeStart = 'Use HH:MM (24h)';
+    if (!isTime(timeEnd)) e.timeEnd = 'Use HH:MM (24h)';
+    if (isTime(timeStart) && isTime(timeEnd) && toMin(timeEnd) <= toMin(timeStart)) {
+      e.timeEnd = 'End must be after start';
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -42,6 +60,7 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
                 onChange={(e) => setTitle(e.target.value)}
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-300"
               />
+              {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
             </div>
             <div>
               <label className="text-sm text-gray-500">Write Description</label>
@@ -71,6 +90,7 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
               <div className="mt-1">
                 <DateInput value={date} onChange={setDate} />
               </div>
+              {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
             </div>
             <div>
               <label className="text-sm text-gray-500">Add Group</label>
@@ -121,6 +141,11 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
                   placeholder="End (HH:MM)"
                 />
               </div>
+              {(errors.timeStart || errors.timeEnd) && (
+                <p className="text-xs text-red-500 mt-1">
+                  {errors.timeStart || errors.timeEnd}
+                </p>
+              )}
             </div>
             <div>
               <label className="text-sm text-gray-500">Set Priority</label>
@@ -176,7 +201,8 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
               Cancel
             </button>
             <button
-              onClick={() =>
+              onClick={() => {
+                if (!validate()) return;
                 onCreate({
                   title,
                   description,
@@ -187,8 +213,8 @@ export default function ModalCreateTask({ onClose, people, onCreate }) {
                   timeEnd,
                   platform: '',
                   theme,
-                })
-              }
+                });
+              }}
               className="px-4 py-2 rounded-lg text-white bg-[#6C5DD3] hover:bg-[#5a4bc7]"
             >
               Save

@@ -1,3 +1,4 @@
+// src/components/calendar/ModalSchedule.jsx
 import React, { useMemo, useState } from 'react';
 import DatePicker from './DatePicker';
 
@@ -169,6 +170,13 @@ export default function ModalSchedule({ onClose, people, onCreate }) {
                     >
                       <span className="w-4 h-4 rounded-full" style={{ backgroundColor: m.color }} />
                       {m.name}
+                      <button
+                        aria-label={`Remove ${m.name}`}
+                        className="ml-1 text-gray-500 hover:text-gray-700"
+                        onClick={() => setMembers((prev) => prev.filter((x) => x.id !== m.id))}
+                      >
+                        ×
+                      </button>
                     </span>
                   ))}
                 </div>

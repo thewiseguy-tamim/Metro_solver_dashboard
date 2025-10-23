@@ -8,9 +8,8 @@ import {
   GitBranch,
   Minus,
   Plus,
-  StretchHorizontal, // Fit-to-view icon (lucide >= 0.294). If unavailable, use Maximize2.
+  StretchHorizontal, // If not available in your lucide version, use Maximize2
   X,
-  CheckCircle2,
   User,
   Clock,
   Timer,
@@ -23,7 +22,6 @@ import {
   AlertTriangle,
   CheckCircle,
   XCircle,
-  // Maximize2, // fallback icon if StretchHorizontal isn't available
 } from 'lucide-react';
 
 import TabNavigation from '../components/PeopleDirectory/TabNavigation';
@@ -32,7 +30,7 @@ import OrgChart from '../components/PeopleDirectory/OrgChart';
 import AddMemberDropdown from '../components/PeopleDirectory/AddMemberDropdown';
 import CreateEmployeeModal from '../components/PeopleDirectory/CreateEmployeeModal';
 
-// Enrich base data
+// Enrich base data for demo
 const EXTRA = {
   tahsan: { position: 'Founder - CEO', department: 'Executive', location: 'Boston HQ', reportsTo: null, avatar: 'https://i.pravatar.cc/80?u=tahsan' },
   herry: { position: 'Engineering', department: 'Engineering', location: 'London Office', reportsTo: 'tahsan', avatar: 'https://i.pravatar.cc/80?u=herry' },
@@ -42,7 +40,7 @@ const EXTRA = {
   tim: { position: 'HR Management', department: 'HR', location: 'Boston HQ', reportsTo: 'herryb', avatar: 'https://i.pravatar.cc/80?u=tim' },
   matt: { position: 'Account Executive', department: 'Sales', location: 'Boston HQ', reportsTo: 'james', avatar: 'https://i.pravatar.cc/80?u=matt' },
   alex: { position: 'Engineer', department: 'Engineering', location: 'London Office', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=alex' },
-  mia: { position: 'Engineer', department: 'Engineering', location: 'London Office', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=mia' },
+  mia:  { position: 'Engineer', department: 'Engineering', location: 'London Office', reportsTo: 'herry', avatar: 'https://i.pravatar.cc/80?u=mia' },
   noah: { position: 'Analyst', department: 'Finance', location: 'Boston HQ', reportsTo: 'james', avatar: 'https://i.pravatar.cc/80?u=noah' },
   olivia: { position: 'Designer', department: 'Product', location: 'Boston HQ', reportsTo: 'herryb', avatar: 'https://i.pravatar.cc/80?u=olivia' },
 };
@@ -59,6 +57,10 @@ const TABS = [
   { id: 'skills', label: 'Skills', icon: Award },
   { id: 'wellness', label: 'Wellness', icon: Activity },
 ];
+
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 2;
+const DROPDOWN_MAX_HEIGHT = 400; // change to 300 if you prefer
 
 function normalizePeople(raw) {
   return raw.map((p) => {
@@ -92,9 +94,6 @@ function toCSV(rows) {
   return [headers.join(','), ...rows.map((r) => headers.map((h) => esc(r[h])).join(','))].join('\n');
 }
 
-const MIN_ZOOM = 0.5;
-const MAX_ZOOM = 2;
-
 export default function PeopleDirectory() {
   // Tabs
   const [activeTab, setActiveTab] = useState('org');
@@ -103,11 +102,11 @@ export default function PeopleDirectory() {
   const [people, setPeople] = useState(() => normalizePeople(peopleRaw));
   const [selectedEmployees, setSelectedEmployees] = useState([]);
 
-  // Search + employee list panel (hidden by default, opens on click)
+  // Search + employee list dropdown (hidden by default)
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [showEmployeeList, setShowEmployeeList] = useState(false);
-  const [employeeListMaxH, setEmployeeListMaxH] = useState(480);
+  const [showEmployeeList, setShowEmployeeList] = useState(false); // hidden on load
+  const [employeeListMaxH, setEmployeeListMaxH] = useState(DROPDOWN_MAX_HEIGHT);
 
   const searchInputRef = useRef(null);
   const employeeListRef = useRef(null);
@@ -172,7 +171,7 @@ export default function PeopleDirectory() {
   // Selection
   function handleToggleSelect(id) {
     setSelectedEmployees((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-    setShowEmployeeList(false); // hide after pick
+    setShowEmployeeList(false); // close after pick
   }
 
   // Create modal
@@ -182,17 +181,20 @@ export default function PeopleDirectory() {
     showToast('Employee created successfully', 'success');
   }
 
-  // Employee list panel (only on input click)
+  // Open the list when clicking the search input (or typing)
   const openEmployeeList = () => {
     setShowEmployeeList(true);
     const rect = searchInputRef.current?.getBoundingClientRect();
     if (rect) {
-      const maxH = Math.max(window.innerHeight - rect.bottom - 100, 240);
-      setEmployeeListMaxH(maxH);
+      // keep within viewport but clamp to DROPDOWN_MAX_HEIGHT
+      const dynamicMax = Math.max(window.innerHeight - rect.bottom - 100, 240);
+      setEmployeeListMaxH(Math.min(DROPDOWN_MAX_HEIGHT, dynamicMax));
+    } else {
+      setEmployeeListMaxH(DROPDOWN_MAX_HEIGHT);
     }
   };
 
-  // Close employee list on outside click / ESC
+  // Close on outside click / ESC
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -283,7 +285,7 @@ export default function PeopleDirectory() {
   const handleZoomIn = () => setZoomLevel((z) => Math.min(+((z + 0.1).toFixed(2)), MAX_ZOOM));
   const handleZoomOut = () => setZoomLevel((z) => Math.max(+((z - 0.1).toFixed(2)), MIN_ZOOM));
 
-  // Fit to view (used by the third icon below +/−)
+  // Fit to view (third button)
   const handleFitView = () => {
     const container = orgChartRef.current;
     const content = contentRef.current;
@@ -361,8 +363,11 @@ export default function PeopleDirectory() {
             className="w-full h-11 pl-9 pr-9 text-sm rounded-[8px] border border-[#E5E7EB] placeholder-[#6B7280] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
             placeholder="Search for employee..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onClick={openEmployeeList}   // only show on click
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              if (!showEmployeeList) openEmployeeList(); // show on typing
+            }}
+            onFocus={openEmployeeList} // show on click/focus
             aria-label="Search for employee"
           />
           {searchQuery ? (
@@ -375,22 +380,24 @@ export default function PeopleDirectory() {
             </button>
           ) : null}
 
-          {/* Floating Employee List (hidden by default, shows after click) */}
+          {/* Dropdown list: hidden by default, visible only on interaction */}
           <div
             ref={employeeListRef}
             className={[
               'absolute z-50 left-0 top-[calc(100%+8px)] w-[320px]',
-              'transition-transform duration-300 ease-in-out',
-              showEmployeeList ? 'translate-x-0' : '-translate-x-full',
+              'transition-all duration-150',
+              showEmployeeList ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-1 pointer-events-none',
             ].join(' ')}
-            style={{ maxHeight: employeeListMaxH }}
           >
             <EmployeeList
               floating
-              style={{ maxHeight: employeeListMaxH }}
+              maxHeight={employeeListMaxH}     // <= SCROLL LIMIT
               employees={filteredPeople}
               selected={selectedEmployees}
-              onToggleSelect={handleToggleSelect}
+              onToggleSelect={(id) => {
+                handleToggleSelect(id);
+                setShowEmployeeList(false);
+              }}
               onClosePanel={() => setShowEmployeeList(false)}
             />
           </div>
@@ -404,11 +411,6 @@ export default function PeopleDirectory() {
           <span>Edit ORG Chart</span>
         </button>
       </div>
-
-      {/* Mobile overlay when list open */}
-      {showEmployeeList && (
-        <div className="fixed inset-0 bg-black/20 z-40 lg:hidden" onClick={() => setShowEmployeeList(false)} aria-hidden />
-      )}
 
       {/* Content */}
       {activeTab !== 'org' ? (
@@ -456,8 +458,8 @@ export default function PeopleDirectory() {
                       selectedEmployees={selectedEmployees}
                       activeMenu={activeMenu}
                       onToggleMenu={(id) => setActiveMenu((m) => (m === id ? null : id))}
-                      onViewProfile={(id) => showToast(`Open profile: ${id}`, 'info')}
-                      onEditEmployee={(id) => showToast(`Edit employee: ${id}`, 'info')}
+                      onViewProfile={() => {}}
+                      onEditEmployee={() => {}}
                       onDeleteEmployee={handleDeleteEmployee}
                       onRequestAdd={(id, e) => handleAddMemberClick(id, e)}
                     />
@@ -489,9 +491,6 @@ export default function PeopleDirectory() {
                 title="Fit to view"
               >
                 <StretchHorizontal className="w-4 h-4 text-[#0A0D14]" />
-                {/* If StretchHorizontal not available, use:
-                    <Maximize2 className="w-4 h-4 text-[#0A0D14]" />
-                */}
               </button>
             </div>
           </div>

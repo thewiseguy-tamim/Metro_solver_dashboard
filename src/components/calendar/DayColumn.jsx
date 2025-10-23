@@ -1,3 +1,4 @@
+// src/components/calendar/DayColumn.jsx
 import React, { useMemo } from 'react';
 import EventCard from './EventCard';
 import { dateKey, hourHeight, dayStartHour, dayEndHour, timeToMinutes } from './utils';
@@ -56,7 +57,13 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
   return (
     <div className="relative border-l border-gray-100" style={{ height: totalH }}>
       {shaded && (
-        <div className="absolute inset-0 pointer-events-none opacity-40 bg-[repeating-linear-gradient(135deg,rgba(107,114,128,0.12)_0_6px,transparent_6px_12px)]" />
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage:
+              'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px)',
+          }}
+        />
       )}
 
       {/* hour and half-hour lines */}
@@ -64,7 +71,7 @@ export default function DayColumn({ date, events, peopleMap, shaded = false }) {
         <div
           key={i}
           className={`absolute inset-x-0 border-t ${
-            i % 2 === 0 ? 'border-gray-100' : 'border-dashed border-gray-100'
+            i % 2 === 0 ? 'border-gray-200' : 'border-dashed border-gray-100'
           }`}
           style={{ top: i * (hourHeight / 2) }}
         />
