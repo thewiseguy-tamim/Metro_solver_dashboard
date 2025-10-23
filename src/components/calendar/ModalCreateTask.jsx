@@ -54,7 +54,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
     [people, assigneeId]
   );
 
-  // Group status dots (only for "In Progress" and "Done")
+  // Status dot for groups
   const groupDotClass = (name = '') => {
     if (name === 'In Progress') return 'bg-amber-500';
     if (name === 'Done') return 'bg-emerald-500';
@@ -93,10 +93,15 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
       aria-modal="true"
       aria-labelledby="create-task-title"
     >
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+        aria-hidden="true"
+      />
 
-      {/* Wider modal to support two columns */}
-      <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl border border-gray-200 mx-4">
+      {/* Modal container */}
+      <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-white rounded-2xl shadow-2xl border border-gray-200 mx-4">
+
         {/* Header with dashed border bottom */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-dashed border-gray-200">
           <h3 id="create-task-title" className="text-[20px] font-semibold text-gray-900">
@@ -113,29 +118,33 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
 
         {/* Content: Two-column grid on desktop, single column on mobile; 24px gap */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left column: independent vertical stack with 20px spacing */}
-          <div className="space-y-5">
-            {/* Task Title */}
+          {/* Full-width: Task Title */}
+          <div className="md:col-span-2">
             <Field label="Task Title" error={errors.title}>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Meeting with Acme Inc."
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                className="w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
               />
             </Field>
+          </div>
 
-            {/* Write Description */}
+          {/* Full-width: Write Description */}
+          <div className="md:col-span-2">
             <Field label="Write Description">
               <textarea
-                rows={4}
+                rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Add a short description..."
-                className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                className="w-full rounded-lg border border-gray-200 px-3 py-[10px] text-[14px] text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
               />
             </Field>
+          </div>
 
+          {/* Left column (compact vertical spacing) */}
+          <div className="space-y-4">
             {/* Add Member with user icon prefix */}
             <Field label="Add Member">
               <div className="relative">
@@ -143,7 +152,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                 <select
                   value={assigneeId}
                   onChange={(e) => setAssigneeId(e.target.value)}
-                  className="mt-2 w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                  className="w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
                 >
                   {people.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -159,9 +168,9 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
               <DateInput value={date} onChange={setDate} />
             </Field>
 
-            {/* Add Group: 2x2 grid, radio-style with right status dot (only for In Progress/Done) */}
+            {/* Add Group: 2x2 grid, radio-style with right status dot */}
             <Field label="Add Group">
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {groupsJson.map((g) => {
                   const selected = String(groupId) === String(g.id);
                   const dotClass = groupDotClass(g.name);
@@ -172,7 +181,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                       onClick={() => setGroupId(String(g.id))}
                       aria-pressed={selected}
                       className={[
-                        'px-3 py-[10px] rounded-lg border text-left flex items-center justify-between gap-2',
+                        'px-3 py-2.5 rounded-lg border text-left flex items-center justify-between gap-2',
                         selected ? 'border-2 border-violet-500 bg-violet-50' : 'border-gray-200 hover:bg-gray-50',
                         'focus:outline-none focus:ring-2 focus:ring-violet-300',
                       ].join(' ')}
@@ -188,7 +197,6 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                         </span>
                         <span className="text-gray-900 text-[14px]">{g.name}</span>
                       </span>
-                      {/* Status dot only for In Progress / Done */}
                       {dotClass ? <span className={`h-2 w-2 rounded-full ${dotClass}`} /> : <span className="h-2 w-2" />}
                     </button>
                   );
@@ -197,8 +205,8 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
             </Field>
           </div>
 
-          {/* Right column: independent vertical stack with 20px spacing */}
-          <div className="space-y-5">
+          {/* Right column (compact spacing) */}
+          <div className="space-y-4">
             {/* Add Labels with tag icon prefix */}
             <Field label="Add Labels">
               <div className="relative">
@@ -206,7 +214,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                 <select
                   value={labelId}
                   onChange={(e) => setLabelId(e.target.value)}
-                  className="mt-2 w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                  className="w-full rounded-lg border border-gray-200 pl-9 pr-3 py-[10px] bg-white text-[14px] text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
                 >
                   {labelsJson.map((l) => (
                     <option key={l.id} value={l.id}>
@@ -219,7 +227,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
 
             {/* Add Time with clock icons in both inputs */}
             <Field label="Add Time" error={errors.timeStart || errors.timeEnd}>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <InputWithIcon
                   icon={<ClockIcon className="w-4 h-4 text-gray-500" />}
                   value={timeStart}
@@ -238,12 +246,13 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
               )}
             </Field>
 
-            {/* Set Priority: 2x2 grid, flag left, text center, checkmark right on selected */}
+            {/* Set Priority: 2x2 grid, compact padding */}
             <Field label="Set Priority">
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {prioritiesJson.map((p) => {
                   const selected = String(priorityId) === String(p.id);
-                  const byName = priorityMap[p.name] || { color: p.color || '#6B7280', dot: p.color || '#6B7280' };
+                  const palette =
+                    priorityMap[p.name] || { color: p.color || '#6B7280', dot: p.color || '#6B7280' };
                   return (
                     <button
                       type="button"
@@ -251,35 +260,34 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                       onClick={() => setPriorityId(String(p.id))}
                       aria-pressed={selected}
                       className={[
-                        'px-3 py-3 rounded-lg border flex items-center justify-between gap-2',
+                        'px-3 py-2.5 rounded-lg border flex items-center justify-between gap-2',
                         selected ? 'border-2 border-violet-500 bg-violet-50' : 'border-gray-200 hover:bg-gray-50',
                         'focus:outline-none focus:ring-2 focus:ring-violet-300',
                       ].join(' ')}
                     >
                       <span className="flex items-center gap-2">
-                        <FlagIcon className="w-5 h-5" style={{ color: byName.color }} />
+                        <FlagIcon className="w-5 h-5" style={{ color: palette.color }} />
                         <span className="text-gray-900 text-[14px]">{p.name}</span>
                       </span>
                       {selected ? (
                         <CheckCircleIcon className="w-5 h-5 text-violet-500" />
                       ) : (
-                        <span
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: byName.dot }}
-                        />
+                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: palette.dot }} />
                       )}
                     </button>
                   );
                 })}
               </div>
             </Field>
+          </div>
 
-            {/* Attachment area: dashed, rounded, light bg, centered content */}
+          {/* FULL-WIDTH: Attachment (second last) - reduced padding to keep height */}
+          <div className="md:col-span-2">
             <Field label="Attachment">
               <label
                 onDrop={onDrop}
                 onDragOver={onDragOver}
-                className="mt-2 block rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-center py-12 px-6 cursor-pointer hover:border-violet-300 hover:bg-violet-50"
+                className="block rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-center py-10 px-6 cursor-pointer hover:border-violet-300 hover:bg-violet-50"
               >
                 <input
                   type="file"
@@ -303,10 +311,12 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                 </div>
               </label>
             </Field>
+          </div>
 
-            {/* Card Color: pill bars, 60-70px width, ring when selected */}
-            <Field label="Card Color">
-              <div className="mt-2 flex flex-wrap gap-3">
+          {/* FULL-WIDTH: Card Color (last) - centered pills */}
+          <div className="md:col-span-2">
+            <Field label="">
+              <div className="flex flex-wrap justify-center gap-[10px]">
                 {[
                   { key: 'purple', className: 'bg-violet-500' },
                   { key: 'magenta', className: 'bg-fuchsia-500' },
@@ -321,7 +331,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                     type="button"
                     onClick={() => setTheme(c.key)}
                     className={[
-                      'h-[14px] w-[68px] rounded-full',
+                      'h-3 w-[68px] rounded-full',
                       c.className,
                       theme === c.key ? 'ring-2 ring-purple-400 ring-offset-2' : '',
                     ].join(' ')}
@@ -334,11 +344,11 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
           </div>
         </div>
 
-        {/* Footer: space-between, cancel left, save right, 24px horizontal, 20px bottom */}
-        <div className="px-6 pb-5 border-t border-gray-100">
+        {/* Footer: space-between, compact button heights */}
+        <div className="px-6 pb-6 border-t border-gray-100">
           <div className="flex items-center justify-between">
             <button
-              className="px-6 py-3 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
+              className="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50"
               onClick={onClose}
             >
               Cancel
@@ -363,7 +373,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
                   attachment,
                 });
               }}
-              className="px-9 py-3 rounded-lg text-white bg-[linear-gradient(180deg,#2F0743_0%,#41295A_100%)] hover:brightness-95 hover:shadow focus:outline-none focus:ring-2 focus:ring-violet-300"
+              className="px-8 py-2.5 rounded-lg text-white bg-[linear-gradient(180deg,#2F0743_0%,#41295A_100%)] hover:brightness-95 hover:shadow focus:outline-none focus:ring-2 focus:ring-violet-300"
             >
               Save
             </button>
@@ -379,7 +389,7 @@ export default function ModalCreateTask({ onClose, people = [], onCreate }) {
 function Field({ label, error, children }) {
   return (
     <div>
-      <label className="text-[13px] text-gray-500 font-medium">{label}</label>
+      <label className="block mb-2 text-[13px] text-gray-500 font-medium">{label}</label>
       {children}
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>

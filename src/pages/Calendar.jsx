@@ -46,11 +46,15 @@ export default function Calendar() {
             Schedule
           </button>
           <button
-            className="px-3 py-2 rounded-lg text-white bg-[#6C5DD3] hover:bg-[#5a4bc7]"
+            className="px-3 py-2 rounded-lg text-white"
+            style={{
+              background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)",
+            }}
             onClick={() => setOpenCreate(true)}
           >
             + Create Task
           </button>
+
         </div>
       </div>
 

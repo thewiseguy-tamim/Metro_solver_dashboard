@@ -3,6 +3,24 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, Check } from 'lucide-react';
 import LineChart from '../charts/LineChart';
 
+// Small media hook to scale chart height on tablets (md+)
+function useMedia(query) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const m = window.matchMedia(query);
+    const onChange = (e) => setMatches(e.matches);
+    setMatches(m.matches);
+    if (m.addEventListener) m.addEventListener('change', onChange);
+    else m.addListener(onChange);
+    return () => {
+      if (m.removeEventListener) m.removeEventListener('change', onChange);
+      else m.removeListener(onChange);
+    };
+  }, [query]);
+  return matches;
+}
+
 export default function RecruitmentEngagement({ data }) {
   // Build dataset map from JSON; if not provided, derive from base series.
   const datasets = useMemo(() => {
@@ -118,53 +136,50 @@ export default function RecruitmentEngagement({ data }) {
 
   if (!data) return null;
 
+  const isMdUp = useMedia('(min-width: 768px)');
+
   return (
-    // No outer border to match the design
     <section className="p-4 md:p-6">
-      {/* Title + CTA aligned like the screenshot */}
+      {/* Title + CTA */}
       <div className="mb-2 pb-2 flex items-center justify-between">
-        <h2 className="text-[18px] font-semibold">
+        <h2 className="text-[16px] sm:text-[18px] md:text-[20px] font-semibold">
           Recruitment & Employee Engagement
         </h2>
         <button
-            className="h-9 px-4 rounded-full text-white text-[14px] font-medium"
-            style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
-            >
-            View Details
+          className="h-9 px-3 md:px-4 rounded-full text-white text-[14px] font-medium"
+          style={{ background: "linear-gradient(0deg, #41295A 0%, #2F0743 100%)" }}
+        >
+          View Details
         </button>
-
       </div>
 
-      {/* Chart card with its own border and internal controls */}
-      <div className="relative rounded-2xl border border-[#E5E7EB] p-2 md:p-4">
+      {/* Chart card with controls */}
+      <div className="relative rounded-2xl border border-[#E5E7EB] p-3 md:p-4 overflow-visible">
         {/* Dataset dropdown (left) */}
         <div className="absolute top-3 left-3 z-20" ref={datasetRef}>
-        <button
+          <button
             aria-haspopup="listbox"
             aria-expanded={datasetOpen}
             onClick={() => setDatasetOpen((o) => !o)}
-            className="h-9 px-3 rounded-full text-white text-[14px] flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            className="h-9 md:h-10 px-3 md:px-4 rounded-full text-white text-[14px] flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
             style={{
-            background:
+              background:
                 selectedDataset.label === 'Job Openings'
-                ? 'linear-gradient(0deg, #41295A 0%, #2F0743 100%)'
-                : 'linear-gradient(to bottom, #7C6FDC, #6C5DD3)',
+                  ? 'linear-gradient(0deg, #41295A 0%, #2F0743 100%)'
+                  : 'linear-gradient(to bottom, #7C6FDC, #6C5DD3)',
             }}
-        >
+          >
             {selectedDataset.label}
             <ChevronDown
-            className={`w-4 h-4 text-white transition-transform ${
-                datasetOpen ? 'rotate-180' : ''
-            }`}
+              className={`w-4 h-4 text-white transition-transform ${datasetOpen ? 'rotate-180' : ''}`}
             />
-        </button>
-
+          </button>
 
           {datasetOpen && (
             <div
               role="listbox"
               tabIndex={-1}
-              className="mt-2 w-64 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
+              className="mt-2 w-64 md:w-72 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
             >
               {Object.entries(datasets).map(([key, val]) => {
                 const active = key === selectedKey;
@@ -196,13 +211,11 @@ export default function RecruitmentEngagement({ data }) {
             aria-haspopup="listbox"
             aria-expanded={rangeOpen}
             onClick={() => setRangeOpen((o) => !o)}
-            className="h-9 px-3 rounded-full text-[14px] border border-[#E5E7EB] text-[#0A0D14] flex items-center gap-2 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
+            className="h-9 md:h-10 px-3 md:px-4 rounded-full text-[14px] border border-[#E5E7EB] text-[#0A0D14] flex items-center gap-2 bg-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#7C6FDC]"
           >
             {selectedRange}
             <ChevronDown
-              className={`w-4 h-4 text-[#6B7280] transition-transform ${
-                rangeOpen ? 'rotate-180' : ''
-              }`}
+              className={`w-4 h-4 text-[#6B7280] transition-transform ${rangeOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
@@ -210,36 +223,34 @@ export default function RecruitmentEngagement({ data }) {
             <div
               role="listbox"
               tabIndex={-1}
-              className="absolute right-0 mt-2 w-48 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
+              className="absolute right-0 mt-2 w-44 sm:w-48 rounded-2xl border border-[#E5E7EB] bg-white shadow-lg p-2"
             >
-              {(data?.availableRanges || ['Weekly', 'Monthly', 'Yearly']).map(
-                (label) => {
-                  const active = label === selectedRange;
-                  return (
-                    <button
-                      key={label}
-                      role="option"
-                      aria-selected={active}
-                      onClick={() => {
-                        setSelectedRange(label);
-                        setRangeOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${
-                        active ? 'font-semibold' : 'font-medium'
-                      }`}
-                    >
-                      <span>{label}</span>
-                      {active && <Check className="w-4 h-4 text-[#6C5DD3]" />}
-                    </button>
-                  );
-                }
-              )}
+              {(rangeOptions).map((label) => {
+                const active = label === selectedRange;
+                return (
+                  <button
+                    key={label}
+                    role="option"
+                    aria-selected={active}
+                    onClick={() => {
+                      setSelectedRange(label);
+                      setRangeOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-[15px] flex items-center justify-between hover:bg-[#F3F4F6] ${
+                      active ? 'font-semibold' : 'font-medium'
+                    }`}
+                  >
+                    <span>{label}</span>
+                    {active && <Check className="w-4 h-4 text-[#6C5DD3]" />}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
 
-        {/* Chart body */}
-        <div className="pt-10">
+        {/* Chart body - extra padding to avoid dropdown overlap on tablets */}
+        <div className="pt-14 md:pt-16">
           <LineChart
             labels={series.labels}
             values={series.values}
@@ -255,7 +266,7 @@ export default function RecruitmentEngagement({ data }) {
                 ? data.annotation?.label
                 : ''
             }
-            height={300}
+            height={isMdUp ? 320 : 260}
             stroke="#6C5DD3"
           />
         </div>
